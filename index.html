@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fluent Path | 目的別英語トレーナー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Libre+Baskerville:wght@700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#dashboard" aria-label="Fluent Path ホーム">
+          <span class="brand-mark">FP</span>
+          <span>
+            <strong>Fluent Path</strong>
+            <small>Adaptive English Lab</small>
+          </span>
+        </a>
+        <nav class="main-nav" aria-label="主要ナビゲーション">
+          <a href="#diagnostic">診断</a>
+          <a href="#dashboard">今日</a>
+          <a href="#skills">4技能</a>
+          <a href="#progress">成長</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="workspace" id="dashboard" aria-labelledby="dashboard-title">
+          <div class="intro-panel">
+            <div class="map-art" aria-hidden="true">
+              <div class="route-line"></div>
+              <span class="pin pin-a"></span>
+              <span class="pin pin-b"></span>
+              <span class="pin pin-c"></span>
+              <span class="orbit orbit-one"></span>
+              <span class="orbit orbit-two"></span>
+              <div class="passport">
+                <span>LEVEL</span>
+                <strong id="heroLevel">未診断</strong>
+              </div>
+            </div>
+            <div class="intro-copy">
+              <p class="eyebrow">American campus route</p>
+              <h1 id="dashboard-title">診断して、今日やるべき英語だけに集中する。</h1>
+              <p>
+                旅行、仕事、留学、試験、日常会話。使いたい場面に合わせて問題を変え、
+                スピーキング・ライティング・リーディング・リスニングを毎日の小さな課題に分解します。
+              </p>
+              <div class="hero-actions">
+                <a class="primary-link" href="#diagnostic">診断を始める</a>
+                <button class="ghost-button" id="completeDayButton" type="button">今日の学習を記録</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="status-rail" aria-label="学習ステータス">
+            <div class="metric">
+              <span>連続学習</span>
+              <strong><span id="streakCount">0</span>日</strong>
+            </div>
+            <div class="metric">
+              <span>XP</span>
+              <strong id="xpCount">0</strong>
+            </div>
+            <div class="metric">
+              <span>現在地</span>
+              <strong id="levelLabel">未診断</strong>
+            </div>
+            <div class="level-ring" aria-label="次のレベルまでの進捗">
+              <svg viewBox="0 0 120 120" role="img">
+                <circle cx="60" cy="60" r="50"></circle>
+                <circle id="xpRing" cx="60" cy="60" r="50"></circle>
+              </svg>
+              <span id="ringText">0%</span>
+            </div>
+          </aside>
+        </section>
+
+        <section class="panel diagnostic" id="diagnostic" aria-labelledby="diagnostic-title">
+          <div class="section-heading">
+            <p class="eyebrow">Placement test</p>
+            <h2 id="diagnostic-title">最初の3分診断</h2>
+            <p>目的、現在の自信、短い問題への回答から、今日の学習メニューを生成します。</p>
+          </div>
+
+          <form id="diagnosticForm" class="diagnostic-grid">
+            <fieldset class="choice-block">
+              <legend>英語を使いたい場面</legend>
+              <label><input type="radio" name="goal" value="travel" checked />旅行・海外生活</label>
+              <label><input type="radio" name="goal" value="business" />仕事・会議</label>
+              <label><input type="radio" name="goal" value="study" />留学・授業</label>
+              <label><input type="radio" name="goal" value="exam" />試験・資格</label>
+              <label><input type="radio" name="goal" value="daily" />日常会話</label>
+            </fieldset>
+
+            <fieldset class="choice-block">
+              <legend>今の手応え</legend>
+              <label><input type="radio" name="confidence" value="1" checked />単語を並べるところから</label>
+              <label><input type="radio" name="confidence" value="2" />短い文なら作れる</label>
+              <label><input type="radio" name="confidence" value="3" />会話の要点は追える</label>
+              <label><input type="radio" name="confidence" value="4" />仕事や議論でも使える</label>
+            </fieldset>
+
+            <div class="quiz-card">
+              <label for="vocabQuestion">語彙問題</label>
+              <p>“Could you clarify the deadline?” に最も近い意味は？</p>
+              <select id="vocabQuestion" name="vocab">
+                <option value="0">締切を延ばしてもらえますか</option>
+                <option value="2">締切を明確にしてもらえますか</option>
+                <option value="1">締切を忘れてもいいですか</option>
+              </select>
+            </div>
+
+            <div class="quiz-card">
+              <label for="grammarQuestion">文法問題</label>
+              <p>空欄に入る自然な表現: If I ____ more time, I would review it again.</p>
+              <select id="grammarQuestion" name="grammar">
+                <option value="0">have</option>
+                <option value="2">had</option>
+                <option value="1">will have</option>
+              </select>
+            </div>
+
+            <div class="quiz-card writing-check">
+              <label for="sampleWriting">30秒ライティング</label>
+              <p>英語を使いたい場面で、来月できるようになりたいことを英語で書いてください。</p>
+              <textarea id="sampleWriting" name="writing" rows="5" placeholder="I want to..."></textarea>
+            </div>
+
+            <button class="submit-button" type="submit">診断結果を作成</button>
+          </form>
+        </section>
+
+        <section class="panel plan-panel" aria-live="polite">
+          <div class="section-heading compact">
+            <p class="eyebrow">Today’s route</p>
+            <h2>あなたの今日のメニュー</h2>
+          </div>
+          <div class="route-summary">
+            <div>
+              <span>目的</span>
+              <strong id="goalLabel">未設定</strong>
+            </div>
+            <div>
+              <span>推奨レベル</span>
+              <strong id="recommendedLevel">診断待ち</strong>
+            </div>
+            <div>
+              <span>重点</span>
+              <strong id="focusLabel">基礎確認</strong>
+            </div>
+          </div>
+          <div id="dailyPlan" class="daily-plan"></div>
+        </section>
+
+        <section class="panel skills-panel" id="skills" aria-labelledby="skills-title">
+          <div class="section-heading">
+            <p class="eyebrow">Skill studio</p>
+            <h2 id="skills-title">4技能トレーニング</h2>
+          </div>
+          <div class="tabs" role="tablist" aria-label="技能を選択">
+            <button class="tab is-active" type="button" data-skill="speaking">Speaking</button>
+            <button class="tab" type="button" data-skill="writing">Writing</button>
+            <button class="tab" type="button" data-skill="reading">Reading</button>
+            <button class="tab" type="button" data-skill="listening">Listening</button>
+          </div>
+          <div class="skill-stage">
+            <div>
+              <p class="eyebrow" id="skillMode">Speaking</p>
+              <h3 id="skillTitle">空港で質問する</h3>
+              <p id="skillPrompt">スタッフに「乗り継ぎゲートはどこか」を英語で尋ねてください。</p>
+              <div class="answer-tools">
+                <textarea id="skillAnswer" rows="5" placeholder="Type your answer or speaking script..."></textarea>
+                <div class="tool-row">
+                  <button class="primary-button" id="checkAnswerButton" type="button">回答をチェック</button>
+                  <button class="icon-button" id="speakButton" type="button" aria-label="音声入力">🎙</button>
+                </div>
+              </div>
+            </div>
+            <aside class="feedback-box">
+              <span>Feedback</span>
+              <p id="feedbackText">診断後、目的に合った課題がここに表示されます。</p>
+            </aside>
+          </div>
+        </section>
+
+        <section class="panel progress-panel" id="progress" aria-labelledby="progress-title">
+          <div class="section-heading compact">
+            <p class="eyebrow">Growth board</p>
+            <h2 id="progress-title">レベルアップの見える化</h2>
+          </div>
+          <div class="progress-grid">
+            <div class="ladder" id="levelLadder" aria-label="レベル一覧"></div>
+            <div class="habit-card">
+              <h3>今週の習慣</h3>
+              <div class="week-row" id="weekRow"></div>
+              <p id="habitMessage">今日の学習を記録すると、連続日数とXPが増えます。</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
