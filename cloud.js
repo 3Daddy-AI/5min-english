@@ -3,9 +3,8 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Supabaseプロジェクト作成後、この2値を書き換えてください（README.md参照）。
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://rkfsgebnqacddkdfgast.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_7bZuLThN7EUi999L7eJrmQ_-S0mT_0-";
 
 const isConfigured = /^https:\/\/.+\.supabase\.co$/.test(SUPABASE_URL) && SUPABASE_ANON_KEY.length > 20;
 

@@ -32,18 +32,18 @@ GitHubの `main` ブランチへのpushで、Vercelが自動的に本番デプ�
 
 ## クラウド同期（ログイン機能）のセットアップ
 
-ログイン機能（メールのマジックリンク + Googleログイン）とクラウド同期は、無料のSupabaseプロジェクトを自分で作成しないと有効になりません。作成するまでは `cloud.js` が自動的に無効化され、アプリはこれまで通り `localStorage` だけで問題なく動作します。
+ログイン機能（メールのマジックリンク + Googleログイン）とクラウド同期は、無料のSupabaseプロジェクトを作成しないと有効になりません。未作成の間は `cloud.js` が自動的に無効化され、アプリはこれまで通り `localStorage` だけで問題なく動作します。
 
-1. [Supabase](https://supabase.com) で無料プロジェクトを作成し、**Project URL** と **anon public key**（Settings > API）を控える
-2. Authentication > Providers で **Email**（マジックリンク、デフォルトで有効）と **Google** を有効化
-   - Googleを有効化するには、Google Cloud ConsoleでOAuthクライアントIDを作成し、Supabaseが指定するコールバックURLを承認済みリダイレクトURIに登録する必要があります
-3. Authentication > URL Configuration で、本番のVercelドメイン（例: `https://english-theta-five.vercel.app`）と `http://127.0.0.1:4173`（ローカル確認用）をRedirect URLsに追加
-4. [`supabase/schema.sql`](supabase/schema.sql) の内容を SQL Editor に貼り付けて実行（テーブル・RLS・トリガーを作成）
-5. [`cloud.js`](cloud.js) 冒頭の `SUPABASE_URL` と `SUPABASE_ANON_KEY` を、手順1で控えた値に書き換えてデプロイ
+- [x] Supabaseプロジェクト作成、**Project URL** と **Publishable key**（Project Settings > API Keys。旧名称の「anon key」に相当）を取得
+- [x] [`supabase/schema.sql`](supabase/schema.sql) を SQL Editor で実行（`profiles` / `progress` テーブル・RLS・トリガーを作成済み）
+- [x] Authentication > URL Configuration に本番URLとローカル確認用URLを登録済み
+- [x] Authentication > Sign In / Providers で **Email** は有効化済み（メールのマジックリンクは動作します）
+- [ ] **Google** ログインは未設定。有効化するには、Google Cloud ConsoleでOAuthクライアントIDを作成し、SupabaseのSign In / Providers画面が示すコールバックURLを承認済みリダイレクトURIに登録してから、同画面でGoogleプロバイダーを有効にしてください
+- [x] [`cloud.js`](cloud.js) 冒頭の `SUPABASE_URL` と `SUPABASE_ANON_KEY` に実際の値を設定済み
 
-anon public keyはRLS（行レベルセキュリティ）で保護される前提の公開鍵なので、フロントエンドのコードにそのまま埋め込んで問題ありません。パスワードやservice role keyは絶対に含めないでください。
+Publishable keyはRLS（行レベルセキュリティ）で保護される前提の公開鍵なので、フロントエンドのコードにそのまま埋め込んで問題ありません。同じ画面にある `secret key`（旧 service_role key）は絶対に使わないでください。
 
-登録されたメールアドレスと、お知らせメールの同意状況は、Supabaseダッシュボードの `profiles` テーブル（Table Editor）でいつでも確認できます。
+登録されたメールアドレスと、お知らせメールの同意状況は、Supabaseダッシュボードの `profiles` テーブル（Table Editor）または Authentication > Users でいつでも確認できます。
 
 ## Local Preview
 
