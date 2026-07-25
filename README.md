@@ -28,7 +28,22 @@ GitHubの `main` ブランチへのpushで、Vercelが自動的に本番デプ�
 - Googleカレンダーへの毎日のリマインダー登録リンク
 - 進捗データのJSONエクスポート / インポート
 
-進捗は各ユーザーのブラウザ内 `localStorage` に保存されます（`fluentPathState`、schema v2。旧v1データは自動移行）。
+進捗は各ユーザーのブラウザ内 `localStorage` に保存されます（`fluentPathState`、schema v2。旧v1データは自動移行）。ログインすると、この進捗はSupabase経由でクラウドにも同期され、他の端末からも続きが見られます（後述）。
+
+## クラウド同期（ログイン機能）のセットアップ
+
+ログイン機能（メールのマジックリンク + Googleログイン）とクラウド同期は、無料のSupabaseプロジェクトを自分で作成しないと有効になりません。作成するまでは `cloud.js` が自動的に無効化され、アプリはこれまで通り `localStorage` だけで問題なく動作します。
+
+1. [Supabase](https://supabase.com) で無料プロジェクトを作成し、**Project URL** と **anon public key**（Settings > API）を控える
+2. Authentication > Providers で **Email**（マジックリンク、デフォルトで有効）と **Google** を有効化
+   - Googleを有効化するには、Google Cloud ConsoleでOAuthクライアントIDを作成し、Supabaseが指定するコールバックURLを承認済みリダイレクトURIに登録する必要があります
+3. Authentication > URL Configuration で、本番のVercelドメイン（例: `https://english-theta-five.vercel.app`）と `http://127.0.0.1:4173`（ローカル確認用）をRedirect URLsに追加
+4. [`supabase/schema.sql`](supabase/schema.sql) の内容を SQL Editor に貼り付けて実行（テーブル・RLS・トリガーを作成）
+5. [`cloud.js`](cloud.js) 冒頭の `SUPABASE_URL` と `SUPABASE_ANON_KEY` を、手順1で控えた値に書き換えてデプロイ
+
+anon public keyはRLS（行レベルセキュリティ）で保護される前提の公開鍵なので、フロントエンドのコードにそのまま埋め込んで問題ありません。パスワードやservice role keyは絶対に含めないでください。
+
+登録されたメールアドレスと、お知らせメールの同意状況は、Supabaseダッシュボードの `profiles` テーブル（Table Editor）でいつでも確認できます。
 
 ## Local Preview
 
@@ -49,6 +64,7 @@ This app is fully static. Deploy these files to any static hosting service:
 - `index.html`
 - `styles.css`
 - `app.js`
+- `cloud.js`
 
 Recommended options:
 

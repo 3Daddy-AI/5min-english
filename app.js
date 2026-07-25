@@ -625,6 +625,7 @@ let state = loadState();
 
 function saveState() {
   localStorage.setItem("fluentPathState", JSON.stringify(state));
+  window.FluentCloud?.scheduleSync(state);
 }
 
 const $ = (selector) => document.querySelector(selector);
@@ -1378,6 +1379,70 @@ function importData(file) {
   reader.readAsText(file);
 }
 
+/* ---------- クラウドアカウント（ログイン・同期） ----------
+   window.FluentCloud は cloud.js が提供する（Supabase未設定時は `?.` で常に無視される）。 */
+
+let cloudMigrationDone = false;
+
+function renderAuthArea(session) {
+  const area = $("#authArea");
+  if (session) {
+    const email = session.user.email || "ログイン中";
+    area.innerHTML = `
+      <span class="auth-email">${escapeHtml(email)}</span>
+      <button class="ghost-button small" id="authSignOutButton" type="button">ログアウト</button>
+    `;
+  } else {
+    area.innerHTML = `<button class="ghost-button small" id="authOpenButton" type="button">ログイン</button>`;
+  }
+}
+
+function openAuthModal() {
+  $("#authModalOverlay").hidden = false;
+  $("#authStatus").textContent = "";
+}
+
+function closeAuthModal() {
+  $("#authModalOverlay").hidden = true;
+}
+
+function isValidCloudState(candidate) {
+  return Boolean(candidate) && candidate.version === 2 && typeof candidate.skillXp === "object";
+}
+
+async function handleAuthSession(session) {
+  renderAuthArea(session);
+
+  if (!session) {
+    cloudMigrationDone = false;
+    return;
+  }
+  if (cloudMigrationDone) return;
+  cloudMigrationDone = true;
+  closeAuthModal();
+
+  const hasRow = await window.FluentCloud.hasCloudRow();
+  if (hasRow) {
+    const cloudState = await window.FluentCloud.pullCloudState();
+    if (isValidCloudState(cloudState)) {
+      // クラウドを正とする（同時ログインは想定しない単純な規則）
+      state = Object.assign(defaultState(), cloudState, {
+        skillXp: Object.assign(defaultState().skillXp, cloudState.skillXp || {}),
+        settings: Object.assign(defaultState().settings, cloudState.settings || {})
+      });
+      localStorage.setItem("fluentPathState", JSON.stringify(state));
+      vocabSession = null;
+      renderAll();
+      if (state.level) setSkill(activeSkill);
+      toast("☁️ クラウドの進捗を読み込みました");
+    }
+  } else {
+    // 初回ログイン: 今のローカル進捗をそのままクラウドへ引き継ぐ
+    await window.FluentCloud.pushCloudState(state);
+    toast("☁️ ログインしました。この端末の進捗をクラウドに保存しました");
+  }
+}
+
 /* ---------- 初期化 ---------- */
 
 function renderAll() {
@@ -1431,6 +1496,45 @@ $("#importInput").addEventListener("change", (event) => {
   if (file) importData(file);
   event.target.value = "";
 });
+
+$("#authArea").addEventListener("click", (event) => {
+  if (event.target.id === "authOpenButton") openAuthModal();
+  if (event.target.id === "authSignOutButton") window.FluentCloud?.signOut();
+});
+$("#authModalClose").addEventListener("click", closeAuthModal);
+$("#authModalOverlay").addEventListener("click", (event) => {
+  if (event.target === $("#authModalOverlay")) closeAuthModal();
+});
+$("#authEmailButton").addEventListener("click", async () => {
+  const email = $("#authEmailInput").value.trim();
+  const status = $("#authStatus");
+  if (!email) {
+    status.textContent = "メールアドレスを入力してください。";
+    return;
+  }
+  if (!window.FluentCloud?.isConfigured) {
+    status.textContent = "ログイン機能は準備中です。しばらくお待ちください。";
+    return;
+  }
+  status.textContent = "送信中…";
+  const consent = $("#authMarketingCheckbox").checked;
+  const { error } = await window.FluentCloud.signInWithEmail(email, consent);
+  status.textContent = error
+    ? `送信できませんでした: ${error.message}`
+    : "ログインリンクをメールで送りました。メール内のリンクを開いてください。";
+});
+$("#authGoogleButton").addEventListener("click", async () => {
+  const status = $("#authStatus");
+  if (!window.FluentCloud?.isConfigured) {
+    status.textContent = "ログイン機能は準備中です。しばらくお待ちください。";
+    return;
+  }
+  const consent = $("#authMarketingCheckbox").checked;
+  const { error } = await window.FluentCloud.signInWithGoogle(consent);
+  if (error) status.textContent = `ログインできませんでした: ${error.message}`;
+});
+
+window.FluentCloud?.onAuthChange(handleAuthSession);
 
 checkTranslations();
 renderAll();

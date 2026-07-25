@@ -1393,6 +1393,136 @@ button.daily-task:nth-child(even) {
   100% { transform: translate(-50%, -50%) scale(0.85) rotate(4deg); opacity: 0; }
 }
 
+/* ---------- 認証エリア・ログインモーダル ---------- */
+
+.auth-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-email {
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(22, 18, 28, 0.55);
+}
+
+.modal-box {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 30px;
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 2.5px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--line);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.modal-box h3 {
+  margin-right: 40px;
+}
+
+.modal-note {
+  margin: 10px 0 18px;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+.auth-field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.auth-field input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 2.5px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 500;
+}
+
+.modal-box .primary-button,
+.modal-box .ghost-button {
+  width: 100%;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  flex: 1;
+  height: 2px;
+  content: "";
+  background: var(--line);
+  opacity: 0.2;
+}
+
+.auth-consent {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 18px 0 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.auth-privacy-note {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.auth-status {
+  margin: 0;
+  min-height: 1.2em;
+  color: var(--red-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
 /* ---------- レスポンシブ ---------- */
 
 @media (max-width: 920px) {
@@ -1448,6 +1578,12 @@ button.daily-task:nth-child(even) {
 
   .main-nav a {
     padding-inline: 10px;
+  }
+
+  .auth-area {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
   }
 
   h1 {

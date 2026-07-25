@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=8" />
+    <link rel="stylesheet" href="styles.css?v=9" />
   </head>
   <body>
     <div class="app-shell">
@@ -26,6 +26,9 @@
           <a href="#skills">4技能</a>
           <a href="#progress">成長</a>
         </nav>
+        <div class="auth-area" id="authArea">
+          <button class="ghost-button small" id="authOpenButton" type="button">ログイン</button>
+        </div>
       </header>
 
       <main>
@@ -305,6 +308,33 @@
     </div>
     <div class="toast-zone" id="toastZone" aria-live="polite"></div>
     <div class="celebrate-layer" id="celebrateLayer" hidden></div>
-    <script src="app.js?v=6"></script>
+
+    <div class="modal-overlay" id="authModalOverlay" hidden>
+      <div class="modal-box" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+        <button class="modal-close" id="authModalClose" type="button" aria-label="閉じる">✕</button>
+        <h3 id="authModalTitle">ログイン</h3>
+        <p class="modal-note">ログインすると進捗をクラウドに保存し、他の端末でも続きから始められます。ログインしなくてもこのブラウザだけで引き続き使えます。</p>
+
+        <label class="auth-field">
+          メールアドレス
+          <input type="email" id="authEmailInput" placeholder="you@example.com" autocomplete="email" />
+        </label>
+        <button class="primary-button" id="authEmailButton" type="button">メールでログインリンクを送る</button>
+
+        <div class="auth-divider"><span>または</span></div>
+
+        <button class="ghost-button" id="authGoogleButton" type="button">Googleでログイン</button>
+
+        <label class="auth-consent">
+          <input type="checkbox" id="authMarketingCheckbox" />
+          お得な情報をメールで受け取る（任意）
+        </label>
+        <p class="auth-privacy-note">ログインには必要最小限の情報のみ使用します。パスワードは保存しません。</p>
+        <p class="auth-status" id="authStatus" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <script type="module" src="cloud.js?v=1"></script>
+    <script defer src="app.js?v=7"></script>
   </body>
 </html>
