@@ -254,98 +254,98 @@ const taskPools = {
   }
 };
 
-/* ---------- 単語デッキ（目的別 / w: 単語, ja: 意味, ex: 例文） ---------- */
+/* ---------- 単語デッキ（目的別 / w: 単語, ja: 意味, ex: 例文, exj: 例文の訳） ---------- */
 
 const vocabDecks = {
   travel: [
-    { w: "reservation", ja: "予約", ex: "I'd like to make a reservation for two nights." },
-    { w: "delay", ja: "遅延・遅れ", ex: "There is a 30-minute delay on this flight." },
-    { w: "transfer", ja: "乗り換え（る）", ex: "You need to transfer at Central Station." },
-    { w: "luggage", ja: "手荷物", ex: "Can I leave my luggage at the front desk?" },
-    { w: "boarding pass", ja: "搭乗券", ex: "Please show your boarding pass at the gate." },
-    { w: "departure", ja: "出発", ex: "The departure time has changed to 3 p.m." },
-    { w: "refund", ja: "返金", ex: "Can I get a refund for this ticket?" },
-    { w: "receipt", ja: "領収書・レシート", ex: "Could I have a receipt, please?" },
-    { w: "directions", ja: "道順", ex: "Could you give me directions to the museum?" },
-    { w: "crowded", ja: "混雑した", ex: "The market gets crowded on weekends." },
-    { w: "available", ja: "空いている・利用できる", ex: "Is there a room available tonight?" },
-    { w: "recommend", ja: "すすめる", ex: "What do you recommend on this menu?" },
-    { w: "charge", ja: "料金・請求（する）", ex: "Is there an extra charge for breakfast?" },
-    { w: "platform", ja: "（駅の）ホーム・番線", ex: "The train leaves from platform 4." },
-    { w: "customs", ja: "税関", ex: "You have to go through customs first." },
-    { w: "out of order", ja: "故障中", ex: "The elevator is out of order." }
+    { w: "reservation", ja: "予約", ex: "I'd like to make a reservation for two nights.", exj: "2泊で予約をお願いしたいのですが。" },
+    { w: "delay", ja: "遅延・遅れ", ex: "There is a 30-minute delay on this flight.", exj: "この便には30分の遅れが出ています。" },
+    { w: "transfer", ja: "乗り換え（る）", ex: "You need to transfer at Central Station.", exj: "セントラル駅で乗り換える必要があります。" },
+    { w: "luggage", ja: "手荷物", ex: "Can I leave my luggage at the front desk?", exj: "荷物をフロントに預けてもいいですか。" },
+    { w: "boarding pass", ja: "搭乗券", ex: "Please show your boarding pass at the gate.", exj: "ゲートで搭乗券をご提示ください。" },
+    { w: "departure", ja: "出発", ex: "The departure time has changed to 3 p.m.", exj: "出発時刻が午後3時に変更になりました。" },
+    { w: "refund", ja: "返金", ex: "Can I get a refund for this ticket?", exj: "このチケットは返金してもらえますか。" },
+    { w: "receipt", ja: "領収書・レシート", ex: "Could I have a receipt, please?", exj: "領収書をいただけますか。" },
+    { w: "directions", ja: "道順", ex: "Could you give me directions to the museum?", exj: "博物館への道順を教えていただけますか。" },
+    { w: "crowded", ja: "混雑した", ex: "The market gets crowded on weekends.", exj: "その市場は週末になると混雑します。" },
+    { w: "available", ja: "空いている・利用できる", ex: "Is there a room available tonight?", exj: "今夜、空いている部屋はありますか。" },
+    { w: "recommend", ja: "すすめる", ex: "What do you recommend on this menu?", exj: "このメニューの中でおすすめは何ですか。" },
+    { w: "charge", ja: "料金・請求（する）", ex: "Is there an extra charge for breakfast?", exj: "朝食には追加料金がかかりますか。" },
+    { w: "platform", ja: "（駅の）ホーム・番線", ex: "The train leaves from platform 4.", exj: "その列車は4番線から発車します。" },
+    { w: "customs", ja: "税関", ex: "You have to go through customs first.", exj: "まず税関を通る必要があります。" },
+    { w: "out of order", ja: "故障中", ex: "The elevator is out of order.", exj: "そのエレベーターは故障中です。" }
   ],
   business: [
-    { w: "deadline", ja: "締切", ex: "The deadline for the report is Friday." },
-    { w: "attach", ja: "添付する", ex: "I will attach the file to this email." },
-    { w: "confirm", ja: "確認する・確定する", ex: "Can you confirm the meeting time?" },
-    { w: "proposal", ja: "提案（書）", ex: "We reviewed the proposal yesterday." },
-    { w: "budget", ja: "予算", ex: "The budget for this project is limited." },
-    { w: "client", ja: "顧客・取引先", ex: "The client asked for a small change." },
-    { w: "postpone", ja: "延期する", ex: "Let's postpone the meeting to next week." },
-    { w: "agenda", ja: "議題", ex: "The first item on the agenda is hiring." },
-    { w: "in charge of", ja: "〜の担当で", ex: "She is in charge of the new campaign." },
-    { w: "follow up", ja: "追って確認する", ex: "I'll follow up with the client tomorrow." },
-    { w: "negotiate", ja: "交渉する", ex: "We need to negotiate a better price." },
-    { w: "update", ja: "最新情報（を伝える）", ex: "Here's a quick update on the schedule." },
-    { w: "estimate", ja: "見積もり（る）", ex: "Could you send us an estimate by Friday?" },
-    { w: "urgent", ja: "至急の", ex: "This is urgent, so please reply today." },
-    { w: "task", ja: "作業・タスク", ex: "I have three tasks left for today." },
-    { w: "schedule", ja: "予定（を組む）", ex: "Let me check my schedule first." }
+    { w: "deadline", ja: "締切", ex: "The deadline for the report is Friday.", exj: "レポートの締切は金曜日です。" },
+    { w: "attach", ja: "添付する", ex: "I will attach the file to this email.", exj: "このメールにファイルを添付します。" },
+    { w: "confirm", ja: "確認する・確定する", ex: "Can you confirm the meeting time?", exj: "会議の時間を確認してもらえますか。" },
+    { w: "proposal", ja: "提案（書）", ex: "We reviewed the proposal yesterday.", exj: "私たちは昨日その提案書を検討しました。" },
+    { w: "budget", ja: "予算", ex: "The budget for this project is limited.", exj: "このプロジェクトの予算は限られています。" },
+    { w: "client", ja: "顧客・取引先", ex: "The client asked for a small change.", exj: "クライアントから小さな変更の依頼がありました。" },
+    { w: "postpone", ja: "延期する", ex: "Let's postpone the meeting to next week.", exj: "会議を来週に延期しましょう。" },
+    { w: "agenda", ja: "議題", ex: "The first item on the agenda is hiring.", exj: "議題の最初の項目は採用です。" },
+    { w: "in charge of", ja: "〜の担当で", ex: "She is in charge of the new campaign.", exj: "彼女が新しいキャンペーンの担当です。" },
+    { w: "follow up", ja: "追って確認する", ex: "I'll follow up with the client tomorrow.", exj: "明日クライアントに追って連絡します。" },
+    { w: "negotiate", ja: "交渉する", ex: "We need to negotiate a better price.", exj: "もっと良い価格を交渉する必要があります。" },
+    { w: "update", ja: "最新情報（を伝える）", ex: "Here's a quick update on the schedule.", exj: "スケジュールについて簡単な最新情報です。" },
+    { w: "estimate", ja: "見積もり（る）", ex: "Could you send us an estimate by Friday?", exj: "金曜までに見積もりを送っていただけますか。" },
+    { w: "urgent", ja: "至急の", ex: "This is urgent, so please reply today.", exj: "これは至急なので、今日中に返信してください。" },
+    { w: "task", ja: "作業・タスク", ex: "I have three tasks left for today.", exj: "今日はあと3つタスクが残っています。" },
+    { w: "schedule", ja: "予定（を組む）", ex: "Let me check my schedule first.", exj: "まず予定を確認させてください。" }
   ],
   study: [
-    { w: "assignment", ja: "課題", ex: "The assignment is due next Monday." },
-    { w: "lecture", ja: "講義", ex: "The lecture on history was interesting." },
-    { w: "due", ja: "締切の・提出期限で", ex: "The essay is due on Friday." },
-    { w: "submit", ja: "提出する", ex: "Please submit your homework online." },
-    { w: "source", ja: "出典・情報源", ex: "You need at least two sources for the essay." },
-    { w: "summary", ja: "要約", ex: "Write a short summary of chapter three." },
-    { w: "argue", ja: "主張する", ex: "The author argues that sleep improves memory." },
-    { w: "evidence", ja: "根拠・証拠", ex: "There is strong evidence for this theory." },
-    { w: "register", ja: "登録する・履修する", ex: "I forgot to register for the class." },
-    { w: "grade", ja: "成績", ex: "Participation counts for 20% of the grade." },
-    { w: "outline", ja: "アウトライン・構成案", ex: "Make an outline before you start writing." },
-    { w: "participate", ja: "参加する", ex: "Please participate in the discussion." },
-    { w: "revise", ja: "見直す・書き直す", ex: "I revised my essay twice before submitting." },
-    { w: "cite", ja: "引用する", ex: "Remember to cite all your sources." },
-    { w: "research", ja: "研究・調査", ex: "Her research focuses on child language." },
-    { w: "definition", ja: "定義", ex: "Check the definition in the glossary." }
+    { w: "assignment", ja: "課題", ex: "The assignment is due next Monday.", exj: "その課題は来週月曜が締切です。" },
+    { w: "lecture", ja: "講義", ex: "The lecture on history was interesting.", exj: "歴史の講義は興味深かったです。" },
+    { w: "due", ja: "締切の・提出期限で", ex: "The essay is due on Friday.", exj: "エッセイは金曜が提出期限です。" },
+    { w: "submit", ja: "提出する", ex: "Please submit your homework online.", exj: "宿題はオンラインで提出してください。" },
+    { w: "source", ja: "出典・情報源", ex: "You need at least two sources for the essay.", exj: "エッセイには少なくとも2つの出典が必要です。" },
+    { w: "summary", ja: "要約", ex: "Write a short summary of chapter three.", exj: "第3章の短い要約を書いてください。" },
+    { w: "argue", ja: "主張する", ex: "The author argues that sleep improves memory.", exj: "著者は、睡眠が記憶を向上させると主張しています。" },
+    { w: "evidence", ja: "根拠・証拠", ex: "There is strong evidence for this theory.", exj: "この理論には強い根拠があります。" },
+    { w: "register", ja: "登録する・履修する", ex: "I forgot to register for the class.", exj: "その授業の履修登録をし忘れました。" },
+    { w: "grade", ja: "成績", ex: "Participation counts for 20% of the grade.", exj: "授業参加が成績の20%を占めます。" },
+    { w: "outline", ja: "アウトライン・構成案", ex: "Make an outline before you start writing.", exj: "書き始める前に構成案を作りましょう。" },
+    { w: "participate", ja: "参加する", ex: "Please participate in the discussion.", exj: "議論に参加してください。" },
+    { w: "revise", ja: "見直す・書き直す", ex: "I revised my essay twice before submitting.", exj: "提出する前にエッセイを2回書き直しました。" },
+    { w: "cite", ja: "引用する", ex: "Remember to cite all your sources.", exj: "出典をすべて引用することを忘れないでください。" },
+    { w: "research", ja: "研究・調査", ex: "Her research focuses on child language.", exj: "彼女の研究は子どもの言語に焦点を当てています。" },
+    { w: "definition", ja: "定義", ex: "Check the definition in the glossary.", exj: "用語集で定義を確認してください。" }
   ],
   exam: [
-    { w: "describe", ja: "描写する・説明する", ex: "Describe the picture in three sentences." },
-    { w: "compare", ja: "比較する", ex: "Compare the two graphs briefly." },
-    { w: "increase", ja: "増加（する）", ex: "Sales increased by 10% last year." },
-    { w: "decrease", ja: "減少（する）", ex: "The number of visitors decreased in winter." },
-    { w: "statement", ja: "記述・主張", ex: "Is the statement true or false?" },
-    { w: "passage", ja: "（読解の）本文", ex: "Read the passage and answer the questions." },
-    { w: "purpose", ja: "目的", ex: "What is the main purpose of this email?" },
-    { w: "infer", ja: "推測する", ex: "What can you infer from the last paragraph?" },
-    { w: "conclude", ja: "結論づける", ex: "The author concludes that habits matter most." },
-    { w: "opinion", ja: "意見", ex: "Give your opinion with two reasons." },
-    { w: "agree", ja: "賛成する", ex: "I agree with this idea for two reasons." },
-    { w: "disagree", ja: "反対する", ex: "I disagree because it costs too much." },
-    { w: "reason", ja: "理由", ex: "My main reason is saving time." },
-    { w: "option", ja: "選択肢", ex: "Choose the best option from A to D." },
-    { w: "graph", ja: "グラフ", ex: "The graph shows sales from 2010 to 2020." },
-    { w: "in contrast", ja: "対照的に", ex: "In contrast, costs stayed the same." }
+    { w: "describe", ja: "描写する・説明する", ex: "Describe the picture in three sentences.", exj: "その写真を3文で描写しなさい。" },
+    { w: "compare", ja: "比較する", ex: "Compare the two graphs briefly.", exj: "2つのグラフを簡潔に比較しなさい。" },
+    { w: "increase", ja: "増加（する）", ex: "Sales increased by 10% last year.", exj: "昨年、売上は10%増加しました。" },
+    { w: "decrease", ja: "減少（する）", ex: "The number of visitors decreased in winter.", exj: "冬は来訪者数が減少しました。" },
+    { w: "statement", ja: "記述・主張", ex: "Is the statement true or false?", exj: "その記述は正しいですか、それとも誤りですか。" },
+    { w: "passage", ja: "（読解の）本文", ex: "Read the passage and answer the questions.", exj: "本文を読んで、問いに答えなさい。" },
+    { w: "purpose", ja: "目的", ex: "What is the main purpose of this email?", exj: "このメールの主な目的は何ですか。" },
+    { w: "infer", ja: "推測する", ex: "What can you infer from the last paragraph?", exj: "最終段落から何が推測できますか。" },
+    { w: "conclude", ja: "結論づける", ex: "The author concludes that habits matter most.", exj: "著者は、習慣が最も重要だと結論づけています。" },
+    { w: "opinion", ja: "意見", ex: "Give your opinion with two reasons.", exj: "理由を2つ挙げて意見を述べなさい。" },
+    { w: "agree", ja: "賛成する", ex: "I agree with this idea for two reasons.", exj: "2つの理由から、この考えに賛成です。" },
+    { w: "disagree", ja: "反対する", ex: "I disagree because it costs too much.", exj: "費用がかかりすぎるので反対です。" },
+    { w: "reason", ja: "理由", ex: "My main reason is saving time.", exj: "私の主な理由は時間の節約です。" },
+    { w: "option", ja: "選択肢", ex: "Choose the best option from A to D.", exj: "AからDの中で最も適切な選択肢を選びなさい。" },
+    { w: "graph", ja: "グラフ", ex: "The graph shows sales from 2010 to 2020.", exj: "このグラフは2010年から2020年の売上を示しています。" },
+    { w: "in contrast", ja: "対照的に", ex: "In contrast, costs stayed the same.", exj: "対照的に、コストは変わりませんでした。" }
   ],
   daily: [
-    { w: "hang out", ja: "遊ぶ・つるむ", ex: "Do you want to hang out this weekend?" },
-    { w: "catch up", ja: "近況を話す", ex: "Let's catch up over coffee soon." },
-    { w: "invite", ja: "誘う・招待する", ex: "Thanks for inviting me to the party." },
-    { w: "favorite", ja: "お気に入りの", ex: "This is my favorite cafe in town." },
-    { w: "actually", ja: "実は", ex: "Actually, I've never seen that movie." },
-    { w: "kind of", ja: "ちょっと・まあまあ", ex: "I'm kind of tired today." },
-    { w: "be into", ja: "〜にハマっている", ex: "I'm really into baking these days." },
-    { w: "lately", ja: "最近", ex: "Have you seen any good shows lately?" },
-    { w: "grab", ja: "さっと食べる・取る", ex: "Let's grab lunch before the movie." },
-    { w: "look forward to", ja: "楽しみにする", ex: "I'm looking forward to seeing you!" },
-    { w: "awesome", ja: "最高の", ex: "That concert was awesome!" },
-    { w: "sounds good", ja: "いいね", ex: "Seven o'clock? Sounds good to me." },
-    { w: "on me", ja: "私のおごりで", ex: "Dinner is on me tonight." },
-    { w: "make it", ja: "都合がつく・間に合う", ex: "Sorry, I can't make it on Friday." },
-    { w: "how about", ja: "〜はどう？", ex: "How about next Tuesday instead?" },
-    { w: "no worries", ja: "気にしないで", ex: "No worries, we can meet another day." }
+    { w: "hang out", ja: "遊ぶ・つるむ", ex: "Do you want to hang out this weekend?", exj: "今週末、遊ばない？" },
+    { w: "catch up", ja: "近況を話す", ex: "Let's catch up over coffee soon.", exj: "近いうちにコーヒーでも飲みながら近況を話そう。" },
+    { w: "invite", ja: "誘う・招待する", ex: "Thanks for inviting me to the party.", exj: "パーティーに誘ってくれてありがとう。" },
+    { w: "favorite", ja: "お気に入りの", ex: "This is my favorite cafe in town.", exj: "ここが街で一番お気に入りのカフェなんだ。" },
+    { w: "actually", ja: "実は", ex: "Actually, I've never seen that movie.", exj: "実は、その映画は見たことがないんだ。" },
+    { w: "kind of", ja: "ちょっと・まあまあ", ex: "I'm kind of tired today.", exj: "今日はちょっと疲れてるんだ。" },
+    { w: "be into", ja: "〜にハマっている", ex: "I'm really into baking these days.", exj: "最近、お菓子作りにすごくハマってるんだ。" },
+    { w: "lately", ja: "最近", ex: "Have you seen any good shows lately?", exj: "最近、何かいい番組を見た？" },
+    { w: "grab", ja: "さっと食べる・取る", ex: "Let's grab lunch before the movie.", exj: "映画の前にさっとランチを食べよう。" },
+    { w: "look forward to", ja: "楽しみにする", ex: "I'm looking forward to seeing you!", exj: "会えるのを楽しみにしてるよ！" },
+    { w: "awesome", ja: "最高の", ex: "That concert was awesome!", exj: "あのコンサートは最高だった！" },
+    { w: "sounds good", ja: "いいね", ex: "Seven o'clock? Sounds good to me.", exj: "7時？いいね、大丈夫だよ。" },
+    { w: "on me", ja: "私のおごりで", ex: "Dinner is on me tonight.", exj: "今夜の夕食は私のおごりね。" },
+    { w: "make it", ja: "都合がつく・間に合う", ex: "Sorry, I can't make it on Friday.", exj: "ごめん、金曜は都合がつかないんだ。" },
+    { w: "how about", ja: "〜はどう？", ex: "How about next Tuesday instead?", exj: "代わりに来週の火曜はどう？" },
+    { w: "no worries", ja: "気にしないで", ex: "No worries, we can meet another day.", exj: "気にしないで、別の日に会えるよ。" }
   ]
 };
 
@@ -529,6 +529,11 @@ function checkTranslations() {
           });
         });
       });
+    });
+  });
+  Object.entries(vocabDecks).forEach(([goal, deck]) => {
+    deck.forEach((word) => {
+      if (!word.exj) missing.push(`vocab ${goal}: exj がありません（${word.w}）`);
     });
   });
   if (missing.length > 0) console.warn(`[FluentPath] 日本語訳が未登録の英文が ${missing.length} 件あります`, missing);
@@ -1081,6 +1086,7 @@ function renderVocab() {
       ? "復習期限の単語がありません。課題タブで4技能を進めましょう。"
       : "明日になると復習カードが届きます。忘れた頃が覚えどきです。";
     $("#vocabAnswer").hidden = true;
+    $("#vocabExampleJa").hidden = true;
     $("#vocabRevealButton").hidden = true;
     $("#vocabKnownButton").hidden = true;
     $("#vocabAgainButton").hidden = true;
@@ -1092,6 +1098,9 @@ function renderVocab() {
   $("#vocabKind").textContent = card.isNew ? "新しい単語" : "復習";
   $("#vocabWord").textContent = card.word.w;
   $("#vocabExample").textContent = card.word.ex;
+  // 例文の訳は答えのヒントになるので、意味と同時に開く
+  $("#vocabExampleJa").textContent = card.word.exj || "";
+  $("#vocabExampleJa").hidden = true;
   $("#vocabAnswer").hidden = true;
   $("#vocabAnswer").textContent = "";
   $("#vocabRevealButton").hidden = false;
@@ -1105,6 +1114,7 @@ function revealVocab() {
   if (!card) return;
   $("#vocabAnswer").textContent = `意味: ${card.word.ja}`;
   $("#vocabAnswer").hidden = false;
+  $("#vocabExampleJa").hidden = !card.word.exj;
   $("#vocabRevealButton").hidden = true;
   $("#vocabKnownButton").hidden = false;
   $("#vocabAgainButton").hidden = false;
