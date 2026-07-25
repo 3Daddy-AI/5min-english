@@ -349,6 +349,192 @@ const vocabDecks = {
   ]
 };
 
+/* ---------- 日本語訳（模範解答 m / 読解パッセージ x / リスニング音声 s） ----------
+   キーは taskPools 内の英文そのもの。英文を編集したらこちらも合わせて更新すること。
+   （読み込み時に checkTranslations() が抜けを検出してコンソールに警告します） */
+
+const translations = {
+  /* travel */
+  "Excuse me, could you tell me where the transfer gate is?": "すみません、乗り継ぎゲートはどこか教えていただけますか？",
+  "Could I have the chicken sandwich and a coffee, please?": "チキンサンドとコーヒーをお願いできますか。",
+  "Excuse me, how can I get to the station from here?": "すみません、ここから駅へはどう行けばいいですか？",
+  "Hello, I have a reservation for tomorrow. Could we check in late, around 11 p.m.? We would also like a quiet room. Thank you.": "こんにちは。明日の予約をしている者です。23時ごろの遅いチェックインは可能でしょうか。静かな部屋もお願いしたいです。よろしくお願いします。",
+  "Hello, I think I left my jacket in room 802 yesterday. Could you check and let me know? Thank you.": "こんにちは。昨日802号室にジャケットを忘れたようです。ご確認のうえ、ご連絡いただけますか。よろしくお願いします。",
+  "Hi, could you book a taxi to the airport for 9 a.m. tomorrow? My room number is 502.": "こんにちは。明日の朝9時に空港行きのタクシーを手配していただけますか。部屋番号は502です。",
+  "The 9:15 train to Boston is delayed by 20 minutes. Passengers for New York, please transfer at Central Station, platform 4.": "9時15分発ボストン行きの列車は20分遅れています。ニューヨーク方面のお客様は、セントラル駅の4番線でお乗り換えください。",
+  "The train is delayed by 20 minutes, and I should transfer at Central Station on platform 4.": "列車は20分遅れていて、セントラル駅の4番線で乗り換える必要がある。",
+  "Breakfast is served from 6:30 to 10:00 on the 2nd floor. The pool is closed on Mondays.": "朝食は2階で6時30分から10時まで提供されます。プールは月曜定休です。",
+  "Breakfast is on the second floor from 6:30 to 10:00, and the pool is closed on Mondays.": "朝食は2階で6時30分から10時まで、プールは月曜が休みだ。",
+  "Passengers with connecting flights should proceed to Gate B12. Please have your boarding pass ready.": "乗り継ぎ便のお客様はB12ゲートへお進みください。搭乗券をご用意ください。",
+  "I should go to Gate B12 and have my boarding pass ready.": "B12ゲートに行って、搭乗券を用意しておくべきだ。",
+  "Attention passengers. Flight 208 to Chicago is now boarding at gate 15.": "ご搭乗のお客様にお知らせします。シカゴ行き208便は、ただいま15番ゲートより搭乗を開始します。",
+  "Welcome to City Hotel. Your room is on the fifth floor. Here is your key.": "シティホテルへようこそ。お部屋は5階です。こちらが鍵になります。",
+  "The next stop is Central Station. Please change here for the airport line.": "次はセントラル駅です。空港線へお乗り換えの方はこちらでお降りください。",
+  "My flight was canceled. Could you rebook me on the next available flight? I need to arrive by tomorrow morning.": "フライトが欠航になりました。次に空いている便に振り替えていただけますか。明日の朝までに到着する必要があります。",
+  "I'm afraid the air conditioner in my room isn't working. Could you send someone to fix it, or move me to another room?": "恐れ入りますが、部屋のエアコンが動きません。修理の方を送っていただくか、別の部屋に移していただけますか。",
+  "This is my first time here. What do you recommend seeing if I only have one day?": "ここに来るのは初めてです。1日しかない場合、何を見るのがおすすめですか？",
+  "Hello, my tour on May 3 was canceled due to the weather. Could you tell me how to get a refund? My booking number is 5024. Thank you.": "こんにちは。5月3日のツアーが悪天候のため中止になりました。返金の方法を教えていただけますか。予約番号は5024です。よろしくお願いします。",
+  "Hi, we will arrive around 10 p.m. Is late check-in possible? Also, is there parking near the apartment?": "こんにちは。到着は22時ごろになります。レイトチェックインは可能でしょうか。また、アパートの近くに駐車場はありますか。",
+  "The location was perfect and the staff were friendly. However, the room was smaller than the photos. Overall, I would stay here again.": "立地は完璧で、スタッフも親切でした。ただ、部屋は写真より狭かったです。全体としては、また泊まりたいと思います。",
+  "Due to a strike, all trains on the Blue Line are suspended this weekend. Replacement buses run every 30 minutes from the main square, but expect delays of up to one hour.": "ストライキのため、今週末はブルーラインの全列車が運休します。代替バスがメイン広場から30分ごとに運行しますが、最大1時間の遅れが見込まれます。",
+  "Trains on the Blue Line are suspended, so I should take a replacement bus from the main square and allow up to an extra hour.": "ブルーラインは運休なので、メイン広場から代替バスに乗り、最大1時間の余裕を見ておくべきだ。",
+  "This policy covers medical costs up to $50,000 but does not cover lost baggage unless it was checked in.": "この保険は最大5万ドルまでの医療費を補償しますが、預け入れた場合を除き、手荷物の紛失は補償されません。",
+  "Medical costs are covered up to $50,000, but lost baggage is only covered if it was checked in.": "医療費は5万ドルまで補償されるが、荷物の紛失は預け入れた場合のみ補償される。",
+  "Visitors may claim a tax refund on purchases over $100 made at participating stores. Keep your receipts and show them at the airport counter before check-in.": "旅行者は、対象店舗での100ドルを超える購入について免税を申請できます。レシートを保管し、チェックイン前に空港カウンターで提示してください。",
+  "I can get a tax refund on purchases over $100 if I keep my receipts and show them at the airport before check-in.": "レシートを保管してチェックイン前に空港で提示すれば、100ドルを超える買い物は免税を受けられる。",
+  "Ladies and gentlemen, due to heavy traffic, this bus will take a different route. If you need City Museum, please get off at the next stop.": "皆様、渋滞のため、このバスは別のルートを通ります。市立博物館へお越しの方は、次の停留所でお降りください。",
+  "Your room upgrade is confirmed. Breakfast and pool access are included at no extra charge.": "お部屋のアップグレードが確定しました。朝食とプールのご利用が追加料金なしで含まれます。",
+  "The last train to the airport leaves at eleven forty from platform two. Please do not miss it.": "空港行きの最終列車は11時40分に2番線から発車します。乗り遅れないようご注意ください。",
+
+  /* business */
+  "Just to confirm, the deadline is Friday, right? Who is in charge of the report?": "確認ですが、締切は金曜日で合っていますか。レポートの担当は誰でしょうか。",
+  "Hello, I'm Ken from the sales team. I'm in charge of the Tokyo area. Nice to meet you.": "こんにちは、営業チームのケンです。東京エリアを担当しています。よろしくお願いします。",
+  "Sorry, could you say that again more slowly? I want to make sure I understand.": "すみません、もう一度ゆっくり言っていただけますか。きちんと理解したいので。",
+  "Hello, I'm afraid I can't join tomorrow's meeting because of a client visit. Could you share the notes later? Thank you.": "こんにちは。恐れ入りますが、クライアント訪問のため明日の会議に参加できません。後ほど議事録を共有していただけますか。よろしくお願いします。",
+  "Hi, please find the sales report attached. Let me know if you have any questions.": "こんにちは。売上レポートを添付いたします。ご不明な点があればお知らせください。",
+  "Thank you for your email. How about Tuesday at 2 p.m.? If that doesn't work, I'm also free on Thursday morning.": "メールありがとうございます。火曜日の14時はいかがでしょうか。ご都合が合わなければ、木曜の午前も空いています。",
+  "Team, the client moved our demo from May 10 to May 8. Please finish the slides by May 6 and send them to Anna for review.": "チームの皆さんへ。クライアントがデモを5月10日から5月8日に変更しました。スライドを5月6日までに仕上げ、レビューのためアンナに送ってください。",
+  "The demo is now on May 8, so the slides are due May 6 and should go to Anna.": "デモは5月8日になったので、スライドは5月6日締切で、アンナに送る必要がある。",
+  "Starting next month, all expense reports must be submitted online by the 25th. Paper forms will no longer be accepted.": "来月から、すべての経費報告書は25日までにオンラインで提出する必要があります。紙の用紙は今後受け付けられません。",
+  "From next month, expense reports must be submitted online by the 25th, and paper forms won't be accepted.": "来月から経費報告書は25日までにオンライン提出が必要で、紙の用紙は受け付けられない。",
+  "The office will be closed on Friday for maintenance. Please work from home and keep Slack open during business hours.": "金曜日はメンテナンスのためオフィスが閉鎖されます。在宅勤務とし、業務時間中はSlackを開いておいてください。",
+  "The office is closed on Friday, so we should work from home and stay available on Slack.": "金曜はオフィスが閉まるので、在宅勤務してSlackで連絡が取れるようにしておくべきだ。",
+  "Let's start the meeting. First, a quick update on the schedule. The release date moves to next Wednesday.": "会議を始めましょう。まず、スケジュールについて簡単な更新です。リリース日は来週水曜に移ります。",
+  "Can everyone see my screen? Today I want to talk about the budget for the next quarter.": "皆さん、私の画面が見えていますか。今日は次の四半期の予算についてお話ししたいと思います。",
+  "Thanks everyone. To sum up, John will contact the client, and we will meet again on Friday.": "皆さんありがとうございます。まとめると、ジョンがクライアントに連絡し、金曜にまた集まります。",
+  "I see your point, but I'm concerned about the cost. Could we compare two options before deciding?": "おっしゃることは分かりますが、コストが気になります。決める前に2つの案を比較できませんか。",
+  "I'd like to suggest moving the launch to June. That would give us two more weeks for testing.": "ローンチを6月に延ばすことを提案したいです。そうすればテスト期間が2週間増えます。",
+  "We're on track overall. Development is 80 percent done, but testing is slightly behind because of a staffing issue.": "全体としては順調です。開発は80%完了していますが、人員の問題でテストが少し遅れています。",
+  "Hi all, here is a summary of today's meeting. Decided: we will launch on June 1. Open: pricing for the premium plan. Next steps: Ken will draft the press release by Friday.": "皆さん、本日の会議のまとめです。決定事項：6月1日にローンチします。未決事項：プレミアムプランの価格。次のアクション：ケンが金曜までにプレスリリース案を作成します。",
+  "I hope you're doing well. I'm writing to follow up on the contract I sent last week. Could you let me know the status when you have a moment?": "お元気でお過ごしでしょうか。先週お送りした契約書の件でご連絡しました。お手すきの際に状況をお知らせいただけますか。",
+  "Thank you for the proposal. After careful consideration, we have decided not to move forward this time. We appreciate your effort and hope to work together in the future.": "ご提案ありがとうございます。慎重に検討した結果、今回は見送らせていただくことになりました。ご尽力に感謝しており、今後ご一緒できることを願っております。",
+  "The new vendor offers a 15% discount for annual contracts, but the cancellation fee is high: 50% of the remaining balance. Legal suggests a 6-month pilot before committing.": "新しいベンダーは年間契約で15%の割引を提供していますが、解約料が高く、残額の50%です。法務は本契約の前に6ヶ月の試験導入を提案しています。",
+  "The discount is attractive, but the cancellation fee is risky, so a 6-month pilot is the safer option.": "割引は魅力的だが解約料がリスクなので、6ヶ月の試験導入の方が安全な選択だ。",
+  "Q2 revenue grew 8% year over year, driven by the enterprise segment. However, churn in the small-business segment rose to 6%, which may offset gains next quarter.": "第2四半期の売上は法人部門に牽引され、前年比8%増でした。しかし、中小企業部門の解約率が6%に上昇し、次の四半期の伸びを相殺する可能性があります。",
+  "Revenue grew 8% thanks to enterprise, but rising small-business churn could offset that next quarter.": "法人部門のおかげで売上は8%伸びたが、中小企業の解約増加が次の四半期にそれを相殺しうる。",
+  "Following the security audit, all staff must enable two-factor authentication by March 15. Accounts without it will be suspended until IT confirms compliance.": "セキュリティ監査を受け、全社員は3月15日までに二要素認証を有効にする必要があります。未設定のアカウントは、IT部門が対応を確認するまで停止されます。",
+  "Everyone must enable two-factor authentication by March 15 or their accounts will be suspended.": "全員が3月15日までに二要素認証を有効にしなければ、アカウントが停止される。",
+  "Before we close, one concern. If we cut the testing phase, support tickets may increase. I suggest we keep the original schedule.": "終わる前に一つ懸念があります。テスト期間を削ると、サポートへの問い合わせが増えるかもしれません。当初のスケジュールを維持することを提案します。",
+  "The client asked for a discount. I proposed extending the contract to two years instead of lowering the price.": "クライアントから値引きの要望がありました。価格を下げる代わりに、契約を2年に延長することを提案しました。",
+  "Quick update. Hiring is frozen until next quarter, so please plan the roadmap with the current team size.": "簡単な更新です。採用は次の四半期まで凍結なので、現在のチーム規模でロードマップを計画してください。",
+
+  /* study */
+  "Excuse me, professor. Could you explain the assignment again? I'm not sure about the deadline.": "すみません、先生。課題についてもう一度説明していただけますか。締切がはっきり分かっていません。",
+  "Hi, are you also in Professor Lee's class? Could I borrow your notes from Monday?": "こんにちは、あなたもリー先生の授業を取っていますか。月曜のノートを貸してもらえませんか。",
+  "Excuse me, I'm looking for this book. Could you tell me where I can find it?": "すみません、この本を探しています。どこにあるか教えていただけますか。",
+  "Dear Professor Lee, I'm sorry, but I was sick and missed today's class. Could you tell me what I should read for next week? Thank you.": "リー先生、申し訳ありません。体調不良で本日の授業を欠席しました。来週までに読むべきものを教えていただけますか。よろしくお願いします。",
+  "I think online classes are useful because we can save time. However, it is hard to ask questions. So I prefer a mix of both.": "オンライン授業は時間を節約できるので便利だと思います。しかし、質問がしにくいです。なので、両方を組み合わせるのが好みです。",
+  "Hi everyone, I'm new to this course. I'm interested in joining a study group. Is anyone meeting this week?": "皆さんこんにちは。このコースは初めてです。勉強会に参加したいと思っています。今週集まる人はいますか。",
+  "The essay is due on Friday at 5 p.m. It should be 500 words and include at least two sources. Late work loses 10% per day.": "エッセイの締切は金曜午後5時です。500語で、少なくとも2つの出典を含める必要があります。提出が遅れると1日につき10%減点されます。",
+  "The 500-word essay with two sources is due Friday at 5 p.m., and late work loses 10% per day.": "出典2つ入りの500語エッセイは金曜午後5時締切で、遅れると1日10%減点される。",
+  "Chapter 3 argues that habits form through repetition and reward. The author gives the example of morning exercise becoming automatic after 60 days.": "第3章は、習慣は反復と報酬によって形成されると論じています。著者は、朝の運動が60日後には自動的になる例を挙げています。",
+  "The chapter says habits form through repetition and reward, like exercise becoming automatic after 60 days.": "この章は、60日後に運動が自動的になるように、習慣は反復と報酬で形成されると述べている。",
+  "Office hours are Tuesdays 2-4 p.m. Book a slot online. For quick questions, use the course forum, where TAs reply within 24 hours.": "オフィスアワーは火曜の午後2時から4時です。オンラインで枠を予約してください。簡単な質問はコースの掲示板をご利用ください。TAが24時間以内に返信します。",
+  "I can book office hours on Tuesdays or ask quick questions on the forum, where TAs reply within a day.": "火曜のオフィスアワーを予約するか、掲示板で簡単な質問ができ、TAが1日以内に返信してくれる。",
+  "Today we will cover chapter five. Before that, please hand in your homework from last week.": "今日は第5章を扱います。その前に、先週の宿題を提出してください。",
+  "Remember, the quiz on Friday covers everything up to page ninety. Bring a pencil and your student ID.": "金曜の小テストは90ページまでが範囲であることを覚えておいてください。鉛筆と学生証を持参してください。",
+  "For the group project, you will work in teams of four. Choose your topic by next Monday.": "グループ課題では、4人1組で取り組みます。来週月曜までにテーマを決めてください。",
+  "That's an interesting point. However, the data in the article suggests the opposite. Could we look at figure two together?": "興味深い指摘ですね。ただ、記事のデータは逆のことを示しています。図2を一緒に見てみませんか。",
+  "Today I'm going to talk about renewable energy. First, I'll explain the background. Then I'll compare two solutions and give my recommendation.": "今日は再生可能エネルギーについてお話しします。まず背景を説明します。次に2つの解決策を比較し、私の提言を述べます。",
+  "Could you clarify how the final grade is calculated? Specifically, how much does class participation count?": "最終成績がどのように算出されるか教えていただけますか。特に、授業参加はどれくらいの割合を占めますか。",
+  "While online learning offers flexibility and lower costs, it requires strong self-discipline. Students who lack structure often fall behind. Therefore, universities should combine online content with regular in-person sessions.": "オンライン学習は柔軟性と低コストをもたらす一方で、強い自己管理を必要とします。枠組みのない学生はしばしば遅れをとります。したがって、大学はオンライン教材と定期的な対面授業を組み合わせるべきです。",
+  "Dear Professor, I'm writing my paper on language learning apps. Would you have time this week to discuss my outline? I have attached a draft.": "先生、私は語学学習アプリについて論文を書いています。今週、構成案について相談するお時間はありますか。下書きを添付しました。",
+  "Studying abroad will help me bridge my engineering background with global experience. My goal is to develop affordable water filters, and this program offers the exact lab experience I need.": "留学は、私の工学の素地と国際経験を結びつける助けになります。私の目標は安価な浄水フィルターを開発することで、このプログラムはまさに私が必要とする研究室での経験を提供してくれます。",
+  "The study followed 2,000 students over three years. Those who slept fewer than six hours scored 12% lower on average. However, the authors note that stress, not sleep alone, may explain part of the gap.": "この研究は3年間にわたり2,000人の学生を追跡しました。睡眠が6時間未満の学生は平均で12%低いスコアでした。ただし著者らは、睡眠だけでなくストレスがその差の一部を説明しうると述べています。",
+  "Students sleeping under six hours scored 12% lower, but stress may explain part of the difference.": "睡眠6時間未満の学生はスコアが12%低かったが、その差の一部はストレスで説明できるかもしれない。",
+  "Critics argue the theory ignores cultural context. Supporters respond that its core claims have been replicated in over 30 countries, though effect sizes vary widely.": "批判者は、この理論が文化的文脈を無視していると主張します。擁護者は、効果の大きさには幅があるものの、中核的な主張は30ヶ国以上で再現されていると反論します。",
+  "Critics say it ignores culture, while supporters point to replications in 30 countries with varying effect sizes.": "批判者は文化を無視していると言い、擁護者は効果の大きさに差はあるが30ヶ国での再現を挙げている。",
+  "Enrollment in humanities has fallen 25% in a decade. The dean proposes joint degrees with computer science, arguing that employers value writing plus technical skills.": "人文系の在籍者数は10年で25%減少しました。学部長は、雇用主が文章力と技術スキルの両方を評価するとして、コンピュータサイエンスとの共同学位を提案しています。",
+  "Humanities enrollment fell 25%, so the dean proposes joint degrees with computer science to add technical skills.": "人文系の在籍者が25%減ったため、学部長は技術スキルを加える共同学位を提案している。",
+  "There are three main causes of the revolution. Economic pressure, new ideas, and a weak government. Let's start with the economy.": "革命には3つの主な原因があります。経済的圧力、新しい思想、そして弱い政府です。まず経済から始めましょう。",
+  "Your midterm will be an open-book essay. You will have two hours, and you must cite at least three readings from class.": "中間試験は持ち込み可のエッセイ形式です。時間は2時間で、授業の課題文献を少なくとも3つ引用する必要があります。",
+  "Next week's seminar is canceled. Instead, please watch the recorded lecture and post one question to the forum by Thursday.": "来週のセミナーは中止です。代わりに録画講義を視聴し、木曜までに掲示板に質問を1つ投稿してください。",
+
+  /* exam */
+  "My name is Yuki. I work at a small IT company. In my free time, I enjoy running and cooking. Recently I started studying English to travel abroad.": "私の名前はユキです。小さなIT企業で働いています。自由な時間にはランニングと料理を楽しみます。最近、海外旅行のために英語の勉強を始めました。",
+  "In this picture, a woman is ordering coffee at a cafe. There are two people waiting behind her. It looks like a busy morning.": "この写真では、女性がカフェでコーヒーを注文しています。彼女の後ろには2人が待っています。忙しい朝のようです。",
+  "I prefer studying in the morning because my mind is fresh. For example, I remember words better before breakfast.": "頭がすっきりしているので、朝に勉強する方が好きです。例えば、朝食前の方が単語をよく覚えられます。",
+  "I agree that remote work improves productivity. First, workers save commuting time. Second, they can focus better without office noise. Therefore, companies should allow it.": "リモートワークが生産性を高めるという意見に賛成です。第一に、通勤時間を節約できます。第二に、オフィスの騒音がなく、より集中できます。したがって、企業はこれを認めるべきです。",
+  "The graph shows that sales increased from January to June. The biggest rise was in April. In contrast, costs stayed almost the same.": "グラフは、売上が1月から6月にかけて増加したことを示しています。最も大きな伸びは4月でした。対照的に、コストはほぼ横ばいでした。",
+  "Dear Mr. Smith, thank you for your invitation. I would be happy to attend the workshop on Saturday. Could you tell me what I should bring?": "スミス様、ご招待ありがとうございます。土曜日のワークショップに喜んで参加させていただきます。持参すべきものを教えていただけますか。",
+  "The city library will move to a new building in September. During August, all books must be returned, and online services will pause for two weeks.": "市立図書館は9月に新しい建物へ移転します。8月中にすべての本を返却する必要があり、オンラインサービスは2週間停止します。",
+  "The library moves in September, books are due back in August, and online services stop for two weeks.": "図書館は9月に移転し、本は8月に返却期限、オンラインサービスは2週間停止する。",
+  "To register for the exam, create an account, upload a photo, and pay the fee by June 1. Late registration costs an extra $30.": "試験に申し込むには、アカウントを作成し、写真をアップロードし、6月1日までに受験料を支払ってください。遅れての申し込みは追加で30ドルかかります。",
+  "I must register and pay by June 1, or pay an extra $30 for late registration.": "6月1日までに登録して支払う必要があり、遅れると追加で30ドルかかる。",
+  "The manager was reluctant to approve the budget, asking for more data twice before finally agreeing.": "その管理職は予算の承認に消極的で、最終的に同意する前に2度もデータの追加を求めました。",
+  "Reluctant means unwilling or hesitant to do something.": "reluctant は「気が進まない」「ためらっている」という意味です。",
+  "Question one. Where does the conversation probably take place? Listen carefully to words like menu, order, and bill.": "問題1。この会話はおそらくどこで行われていますか。menu、order、bill といった語に注意して聞いてください。",
+  "The man wants to change his appointment from Tuesday to Thursday afternoon.": "その男性は、予約を火曜から木曜の午後に変更したいと思っています。",
+  "Attention shoppers. All winter items are thirty percent off until Sunday.": "ご来店のお客様にお知らせします。冬物商品はすべて日曜まで30%オフです。",
+  "Some people think students should wear uniforms. I disagree for two reasons. First, clothes are a form of self-expression. Second, uniforms are expensive for families. That's why I support free dress.": "学生は制服を着るべきだと考える人もいます。私は2つの理由で反対です。第一に、服装は自己表現の一つの形です。第二に、制服は家庭にとって高額です。だから私は私服に賛成します。",
+  "The lecture explained why cities are getting hotter. The professor gave two examples: dark surfaces that absorb heat and fewer trees. This supports the reading's main claim.": "講義は、なぜ都市が暑くなっているのかを説明しました。教授は2つの例を挙げました。熱を吸収する暗い路面と、木の減少です。これは読解文の主要な主張を裏づけています。",
+  "If I had to choose, I would take the internship rather than the summer course, because practical experience matters more in my field.": "選ばなければならないなら、夏期講習よりインターンを選びます。私の分野では実務経験の方が重要だからです。",
+  "Although online shopping is convenient, it weakens local stores. Governments should support small businesses through lower taxes, because lively shopping streets make cities safer and more attractive.": "オンラインショッピングは便利ですが、地元の商店を弱体化させます。活気ある商店街は街をより安全で魅力的にするため、政府は減税を通じて小規模事業者を支援すべきです。",
+  "The reading claims electric cars will dominate by 2035. However, the lecture points out battery shortages and weak charging networks, which cast doubt on that timeline.": "読解文は、2035年までに電気自動車が主流になると主張しています。しかし講義は、電池不足と充電網の弱さを指摘しており、その時期に疑問を投げかけています。",
+  "The chart compares energy sources in 2000 and 2020. Coal fell sharply from 45% to 20%, while renewables tripled. Gas remained stable at around 25%.": "この図は2000年と2020年のエネルギー源を比較しています。石炭は45%から20%へ急減し、一方で再生可能エネルギーは3倍になりました。ガスは25%前後で安定していました。",
+  "Paragraph 2 contradicts the common belief that multitasking saves time. In experiments, switching tasks added up to 40% more completion time, especially for complex work.": "第2段落は、マルチタスクが時間を節約するという通説に反論しています。実験では、タスクを切り替えることで、特に複雑な作業において完了までの時間が最大40%増加しました。",
+  "Multitasking actually wastes time; switching added up to 40% more time on complex tasks.": "マルチタスクは実際には時間を無駄にする。複雑な作業では、切り替えによって最大40%時間が増えた。",
+  "While the author concedes that tourism brings revenue, she maintains that unregulated growth damages the very sites tourists come to see, citing Venice as a cautionary tale.": "著者は観光が収益をもたらすことを認めつつ、規制のない成長が観光客の見に来るまさにその場所を損なうと主張し、ベネチアを戒めの例として挙げています。",
+  "The author admits tourism earns money but argues unregulated growth destroys the attractions, using Venice as an example.": "著者は観光が収益を生むと認めつつ、規制なき成長が観光地を壊すと論じ、ベネチアを例に挙げている。",
+  "The correlation between coffee and longevity disappeared once researchers controlled for income and exercise, suggesting earlier studies confused cause and effect.": "コーヒーと長寿の相関は、研究者が収入と運動の影響を調整すると消失し、初期の研究が因果関係を取り違えていたことを示唆しています。",
+  "After controlling for income and exercise, the coffee-longevity link vanished, so earlier studies likely mixed up cause and effect.": "収入と運動を調整すると、コーヒーと長寿の関連は消えたので、初期の研究は因果を取り違えていた可能性が高い。",
+  "The speaker argues that paper books will survive, mainly because readers remember more when they turn physical pages.": "話者は、読者が実際にページをめくる方がより多く記憶するという理由から、紙の本は生き残ると主張しています。",
+  "According to the study, people who wrote down three goals each morning finished twenty percent more tasks by Friday.": "その研究によると、毎朝3つの目標を書き出した人は、金曜までに20%多くのタスクを終えました。",
+  "The professor disagrees with the textbook. She says the data is too old and the sample was too small to draw conclusions.": "教授は教科書に反対しています。データが古すぎ、標本が小さすぎて結論を出せないと述べています。",
+
+  /* daily */
+  "What are you doing this weekend? I'm thinking of trying that new ramen place.": "今週末は何をするの？私はあの新しいラーメン屋に行ってみようと思ってるんだ。",
+  "Oh really? That sounds fun! How was the weather there?": "へえ、そうなんだ！楽しそう！向こうの天気はどうだった？",
+  "I've been busy with work lately, but I started jogging on Sundays. It feels great.": "最近は仕事が忙しいんだけど、日曜にジョギングを始めたんだ。すごく気持ちいいよ。",
+  "Sorry, I can't make it on Friday. How about next Tuesday instead? I'd love to catch up.": "ごめん、金曜は都合がつかないんだ。代わりに来週の火曜はどう？ぜひ近況を話したいな。",
+  "Thank you so much for dinner last night! The pasta was amazing. Next time it's on me.": "昨夜は夕食を本当にありがとう！パスタが最高だった。次は私のおごりね。",
+  "Do you want to see a movie this Saturday? There's a new action film at 7. We could grab dinner after.": "今週の土曜、映画を見に行かない？7時に新しいアクション映画があるんだ。その後に夕食を食べてもいいね。",
+  "Finally finished my first 10K run! My legs are dead but I'm so proud. Next goal: half marathon in October.": "ついに初めての10kmランを完走！脚はもうボロボロだけど、すごく誇らしい。次の目標は10月のハーフマラソン。",
+  "They finished their first 10K, feel proud though tired, and now aim for a half marathon in October.": "初めての10kmを完走し、疲れているが誇らしく感じていて、次は10月のハーフマラソンを目指している。",
+  "Hey, party's moved to Sam's place, same time. Bring something to drink. Oh, and it's a surprise, so don't text Alex!": "ねえ、パーティーはサムの家に変更、時間は同じ。飲み物を何か持ってきて。あ、サプライズだからアレックスには連絡しないでね！",
+  "The party is now at Sam's place at the same time; bring drinks and keep it secret from Alex.": "パーティーは同じ時間でサムの家に変更。飲み物を持参し、アレックスには秘密にする。",
+  "New cafe alert: great flat white, quiet upstairs seating, free wifi. A bit pricey though. Perfect for remote work days.": "新しいカフェ情報：フラットホワイトが美味しく、2階は静かな席、無料wifi付き。ちょっと高めだけどね。リモートワークの日にぴったり。",
+  "The new cafe has good coffee, quiet seats, and wifi, but it's a little expensive.": "その新しいカフェはコーヒーが美味しく、静かな席とwifiがあるが、少し高い。",
+  "Hey, sorry I'm late. The train stopped for ten minutes. Did you order already?": "ごめん、遅れちゃった。電車が10分止まってたんだ。もう注文した？",
+  "I'm planning a small barbecue on Saturday. Can you bring some drinks? Around three o'clock.": "土曜にちょっとしたバーベキューを計画してるんだ。飲み物を持ってきてくれる？3時ごろだよ。",
+  "Guess what? I got two tickets for the concert. Are you free next Friday night?": "聞いて！コンサートのチケットを2枚手に入れたんだ。来週の金曜の夜は空いてる？",
+  "I've been watching that new drama everyone talks about. Honestly, the first season was better, but I'm still hooked.": "みんなが話題にしてるあの新しいドラマを見てるんだ。正直、1期の方が良かったけど、それでもハマってる。",
+  "That sounds tough. Have you thought about talking to your manager directly? Whatever you decide, I'm on your side.": "それは大変だね。上司に直接話すことは考えた？どんな決断をしても、私はあなたの味方だよ。",
+  "That trip was unforgettable. We got completely lost, ended up at a tiny local festival, and it turned out to be the best night.": "あの旅行は忘れられないよ。完全に道に迷って、小さな地元のお祭りにたどり着いて、結局それが最高の夜になったんだ。",
+  "It's been ages! Work has been hectic since the promotion, but I finally took a week off in Okinawa. How's the new apartment? Let's have a video call soon.": "久しぶり！昇進してから仕事がバタバタだったけど、やっと沖縄で1週間休みを取ったよ。新しいアパートはどう？近いうちにビデオ通話しよう。",
+  "I really appreciate the invite, but I have a family thing that day. Could we do brunch on Sunday instead? My treat.": "誘ってくれて本当に嬉しいんだけど、その日は家族の用事があるんだ。代わりに日曜のブランチはどう？私のおごりで。",
+  "If you liked that book, you should try Deep Work. It changed how I plan my mornings. I'll lend you my copy next time we meet.": "あの本が気に入ったなら、『Deep Work』を読んでみるといいよ。朝の過ごし方の計画が変わったんだ。次に会うとき私の本を貸すね。",
+  "Not gonna lie, moving abroad alone was terrifying at first. Three months in, I finally have a routine: morning market, work, evening runs by the river. Homesick? Sometimes. Regrets? Zero.": "正直に言うと、一人で海外に移り住むのは最初は怖かった。3ヶ月経って、やっと生活のリズムができた。朝は市場、仕事、夕方は川沿いをランニング。ホームシック？たまにね。後悔？ゼロ。",
+  "They were scared about moving abroad, but after three months they have a routine, sometimes miss home, and have no regrets.": "海外移住が怖かったが、3ヶ月後には生活のリズムができ、たまに故郷が恋しくなるものの、後悔はない。",
+  "PSA for the group: the hiking trail we planned is closed after last week's storm. Plan B is the coastal path. Slightly longer but the views are unreal. Meet at 8 sharp.": "グループへのお知らせ：先週の嵐で、予定していたハイキングコースが閉鎖になりました。プランBは海岸沿いの道です。少し長いけど景色が最高。8時ちょうどに集合。",
+  "The original trail is closed, so the group will take the longer coastal path, meeting at 8.": "元のコースは閉鎖なので、グループはより長い海岸沿いの道を行き、8時に集合する。",
+  "Hot take: brunch is overrated. You wait an hour for eggs you could make at home. Give me a quiet morning coffee and a good bakery any day.": "あえて言うけど、ブランチは過大評価だと思う。家で作れる卵料理のために1時間も待つなんて。それより静かな朝のコーヒーといいパン屋の方がいい。",
+  "They think brunch is overrated because of the wait, preferring coffee and a bakery instead.": "待ち時間を理由にブランチは過大評価だと考えており、代わりにコーヒーとパン屋を好んでいる。",
+  "So the movie was sold out, and we ended up at a jazz bar next door. Best accident ever. You have to come next time.": "それで映画が満席で、結局隣のジャズバーに行ったんだ。最高の偶然だったよ。次は絶対一緒に行こう。",
+  "My sister is thinking about quitting her job to study design. I told her to build some savings first, just in case.": "妹がデザインを勉強するために仕事を辞めようか考えてるんだ。念のため、まず貯金をしておくよう言ったよ。",
+  "Long story short, the landlord finally fixed the heater, but now the kitchen tap is leaking. This apartment keeps me busy.": "手短に言うと、大家さんがやっとヒーターを直してくれたんだけど、今度はキッチンの蛇口が水漏れしてる。このアパートには手を焼くよ。"
+};
+
+/* 翻訳の抜けを開発時に検出する（本番でも害はないので常時実行） */
+function checkTranslations() {
+  const missing = [];
+  Object.entries(taskPools).forEach(([goal, tiers]) => {
+    Object.entries(tiers).forEach(([tierName, skills]) => {
+      Object.entries(skills).forEach(([skill, tasks]) => {
+        tasks.forEach((task) => {
+          ["m", "x", "s"].forEach((field) => {
+            if (task[field] && !translations[task[field]]) {
+              missing.push(`${goal}.${tierName}.${skill}: ${field} = ${task[field].slice(0, 40)}…`);
+            }
+          });
+        });
+      });
+    });
+  });
+  if (missing.length > 0) console.warn(`[FluentPath] 日本語訳が未登録の英文が ${missing.length} 件あります`, missing);
+  return missing;
+}
+
 /* ---------- バッジ ---------- */
 
 const badgeDefs = [
@@ -657,6 +843,12 @@ function setSkill(skill) {
   passage.hidden = !task.x;
   passage.textContent = task.x || "";
 
+  // 読解パッセージの訳は「まず英語で読む」ため初期状態では隠し、ボタンで開く
+  $("#passageTools").hidden = !task.x;
+  $("#passageJa").hidden = true;
+  $("#passageJa").textContent = task.x ? (translations[task.x] || "") : "";
+  $("#passageJaButton").textContent = "🇯🇵 日本語訳を見る";
+
   $("#listenTools").hidden = !isListening;
   $("#listenCount").textContent = "";
 
@@ -690,16 +882,27 @@ function scoreKeyPhrases(answer, task) {
   return { ratio: task.k.length ? hits.length / task.k.length : 1, missing: task.k.filter((p) => !lower.includes(p)) };
 }
 
+function revealPassageJa(show) {
+  const el = $("#passageJa");
+  if (!el.textContent) return;
+  el.hidden = !show;
+  $("#passageJaButton").textContent = show ? "🇯🇵 日本語訳を隠す" : "🇯🇵 日本語訳を見る";
+}
+
 function showStars(stars) {
   const row = $("#starRow");
   row.hidden = false;
   row.textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
 }
 
-function showModelAnswer(text) {
+function showModelAnswer(text, label) {
   modelRevealed = true;
   $("#modelAnswerBox").hidden = false;
+  $("#modelAnswerLabel").textContent = label || "Model answer";
   $("#modelAnswerText").textContent = text;
+  const ja = translations[text];
+  $("#modelAnswerJa").textContent = ja || "";
+  $("#modelAnswerJa").hidden = !ja;
 }
 
 function checkAnswer() {
@@ -724,7 +927,7 @@ function checkAnswer() {
     if (stars === 3) message += " ほぼ完璧です！";
     else if (stars === 2) message += " 骨組みは取れています。もう一度🐢でゆっくり聞いてみましょう。";
     else message += " まず数字・地名・動詞だけ拾う練習から。スクリプトを見て音と文字を結びつけましょう。";
-    showModelAnswer(task.s);
+    showModelAnswer(task.s, "Script（音声の英文）");
   } else {
     const wordCount = normalizeWords(answer).length;
     const { ratio, missing } = scoreKeyPhrases(answer, task);
@@ -751,6 +954,8 @@ function checkAnswer() {
       ? "素晴らしい回答です。キーフレーズも情報量も揃っています。"
       : advice.join(" ") || "方向性は良いです。模範解答と見比べて、使える表現を1つ盗みましょう。";
     showModelAnswer(task.m);
+    // 回答後は隠す理由がないので、読解パッセージの訳も開いておく
+    if (task.x) revealPassageJa(true);
   }
 
   showStars(stars);
@@ -1185,6 +1390,7 @@ $("#diagnosticForm").addEventListener("submit", (event) => {
 $$(".tab").forEach((tab) => tab.addEventListener("click", () => setSkill(tab.dataset.skill)));
 $("#checkAnswerButton").addEventListener("click", checkAnswer);
 $("#speakButton").addEventListener("click", startRecognition);
+$("#passageJaButton").addEventListener("click", () => revealPassageJa($("#passageJa").hidden));
 $("#playAudioButton").addEventListener("click", () => playListening(0.95));
 $("#playSlowButton").addEventListener("click", () => playListening(0.68));
 $("#modelSpeakButton").addEventListener("click", () => {
@@ -1216,5 +1422,6 @@ $("#importInput").addEventListener("change", (event) => {
   event.target.value = "";
 });
 
+checkTranslations();
 renderAll();
 if (state.level) setSkill("speaking");

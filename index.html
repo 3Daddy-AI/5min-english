@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <div class="app-shell">
@@ -203,6 +203,10 @@
               <h3 id="skillTitle">—</h3>
               <p id="skillPrompt">診断すると、目的とレベルに合った今日の課題が表示されます。</p>
               <blockquote class="skill-passage" id="skillPassage" hidden></blockquote>
+              <div class="tool-row" id="passageTools" hidden>
+                <button class="ghost-button small" id="passageJaButton" type="button">🇯🇵 日本語訳を見る</button>
+              </div>
+              <p class="passage-ja" id="passageJa" hidden></p>
               <div class="tool-row listen-row" id="listenTools" hidden>
                 <button class="ghost-button" id="playAudioButton" type="button">▶ 音声を再生</button>
                 <button class="icon-button" id="playSlowButton" type="button" aria-label="ゆっくり再生">🐢</button>
@@ -222,8 +226,9 @@
               <p class="stars" id="starRow" hidden></p>
               <p id="feedbackText" aria-live="polite">診断後、目的に合った課題がここに表示されます。</p>
               <div class="model-answer" id="modelAnswerBox" hidden>
-                <span>Model answer</span>
+                <span id="modelAnswerLabel">Model answer</span>
                 <p id="modelAnswerText"></p>
+                <p class="model-answer-ja" id="modelAnswerJa" hidden></p>
                 <button class="ghost-button small" id="modelSpeakButton" type="button">🔊 読み上げ</button>
               </div>
             </aside>
@@ -299,6 +304,6 @@
     </div>
     <div class="toast-zone" id="toastZone" aria-live="polite"></div>
     <div class="celebrate-layer" id="celebrateLayer" hidden></div>
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=5"></script>
   </body>
 </html>
