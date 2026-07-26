@@ -38,7 +38,7 @@ GitHubの `main` ブランチへのpushで、Vercelが自動的に本番デプ�
 - [x] [`supabase/schema.sql`](supabase/schema.sql) を SQL Editor で実行（`profiles` / `progress` テーブル・RLS・トリガーを作成済み）
 - [x] Authentication > URL Configuration に本番URLとローカル確認用URLを登録済み
 - [x] Authentication > Sign In / Providers で **Email** は有効化済み（メールのマジックリンクは動作します）
-- [ ] **Google** ログインは未設定。有効化するには、Google Cloud ConsoleでOAuthクライアントIDを作成し、SupabaseのSign In / Providers画面が示すコールバックURLを承認済みリダイレクトURIに登録してから、同画面でGoogleプロバイダーを有効にしてください
+- [x] **Google** ログインも設定済み。Google Cloudプロジェクト `fluent-path` にOAuthクライアント（ウェブアプリケーション）を作成し、SupabaseのSign In / Providers画面にClient ID/Secretを登録。公開ステータスは「本番環境」（誰でも自分のGoogleアカウントでログイン可能）
 - [x] [`cloud.js`](cloud.js) 冒頭の `SUPABASE_URL` と `SUPABASE_ANON_KEY` に実際の値を設定済み
 
 Publishable keyはRLS（行レベルセキュリティ）で保護される前提の公開鍵なので、フロントエンドのコードにそのまま埋め込んで問題ありません。同じ画面にある `secret key`（旧 service_role key）は絶対に使わないでください。
