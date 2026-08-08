@@ -1621,6 +1621,82 @@ function isValidCloudState(candidate) {
   return Boolean(candidate) && candidate.version === 2 && typeof candidate.skillXp === "object";
 }
 
+function dedupeList(list) {
+  return [...new Set(list)];
+}
+
+function dedupeByJson(listA, listB) {
+  const seen = new Set();
+  const out = [];
+  [...listA, ...listB].forEach((item) => {
+    const key = JSON.stringify(item);
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(item);
+    }
+  });
+  return out;
+}
+
+function mergeMaxMap(a, b) {
+  const out = { ...(a || {}) };
+  Object.entries(b || {}).forEach(([key, value]) => {
+    out[key] = Math.max(out[key] || 0, value || 0);
+  });
+  return out;
+}
+
+function mergeDayLog(a, b) {
+  const out = {};
+  const dates = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+  dates.forEach((d) => {
+    const unitsA = (a && a[d] && a[d].units) || [];
+    const unitsB = (b && b[d] && b[d].units) || [];
+    out[d] = { units: dedupeList([...unitsA, ...unitsB]) };
+  });
+  return out;
+}
+
+function mergeVocabProgress(a, b) {
+  const out = { ...(a || {}) };
+  Object.entries(b || {}).forEach(([id, entry]) => {
+    const existing = out[id];
+    // 単語ごとに「より進んでいる方」（box が高い、同じなら復習期限が遅い方）を残す
+    if (!existing || entry.box > existing.box || (entry.box === existing.box && entry.due > existing.due)) {
+      out[id] = entry;
+    }
+  });
+  return out;
+}
+
+function latestDiagnosis(list) {
+  if (!Array.isArray(list) || list.length === 0) return null;
+  return [...list].sort((a, b) => (a.d < b.d ? 1 : -1))[0];
+}
+
+// クラウドと端末、双方の進捗を突き合わせ、どちらか一方だけを正とせず「失われるものがない」形に統合する
+function mergeStates(local, cloud) {
+  const localDiag = latestDiagnosis(local.diagnoses);
+  const cloudDiag = latestDiagnosis(cloud.diagnoses);
+  const useCloudLevel = Boolean(cloudDiag) && (!localDiag || cloudDiag.d > localDiag.d);
+
+  return {
+    version: 2,
+    goal: (useCloudLevel ? cloud.goal : local.goal) || local.goal || cloud.goal || null,
+    level: (useCloudLevel ? cloud.level : local.level) || local.level || cloud.level || null,
+    xp: Math.max(local.xp || 0, cloud.xp || 0),
+    skillXp: mergeMaxMap(local.skillXp, cloud.skillXp),
+    doneDays: dedupeList([...(local.doneDays || []), ...(cloud.doneDays || [])]),
+    dayLog: mergeDayLog(local.dayLog, cloud.dayLog),
+    vocab: mergeVocabProgress(local.vocab, cloud.vocab),
+    wordsSeen: Math.max(local.wordsSeen || 0, cloud.wordsSeen || 0),
+    history: dedupeByJson(local.history || [], cloud.history || []),
+    badges: dedupeList([...(local.badges || []), ...(cloud.badges || [])]),
+    diagnoses: dedupeByJson(local.diagnoses || [], cloud.diagnoses || []),
+    settings: local.settings || cloud.settings
+  };
+}
+
 async function handleAuthSession(session) {
   renderAuthArea(session);
 
@@ -1636,16 +1712,19 @@ async function handleAuthSession(session) {
   if (hasRow) {
     const cloudState = await window.FluentCloud.pullCloudState();
     if (isValidCloudState(cloudState)) {
-      // クラウドを正とする（同時ログインは想定しない単純な規則）
-      state = Object.assign(defaultState(), cloudState, {
-        skillXp: Object.assign(defaultState().skillXp, cloudState.skillXp || {}),
-        settings: Object.assign(defaultState().settings, cloudState.settings || {})
+      // どちらか一方を正とせず、端末とクラウドの進捗をマージする（XP・単語の定着度・連続記録などは大きい方を採用）
+      const merged = mergeStates(state, cloudState);
+      state = Object.assign(defaultState(), merged, {
+        skillXp: Object.assign(defaultState().skillXp, merged.skillXp || {}),
+        settings: Object.assign(defaultState().settings, merged.settings || {})
       });
       localStorage.setItem("fluentPathState", JSON.stringify(state));
+      // マージ結果を書き戻し、他の端末の古いデータで再び上書きされないようにする
+      await window.FluentCloud.pushCloudState(state);
       vocabSession = null;
       renderAll();
       if (state.level) setSkill(activeSkill);
-      toast("☁️ クラウドの進捗を読み込みました");
+      toast("☁️ クラウドと端末の進捗をマージしました");
     }
   } else {
     // 初回ログイン: 今のローカル進捗をそのままクラウドへ引き継ぐ
