@@ -657,7 +657,7 @@ function checkTranslations() {
       if (!word.exj) missing.push(`vocab ${goal}: exj がありません（${word.w}）`);
     });
   });
-  if (missing.length > 0) console.warn(`[FluentPath] 日本語訳が未登録の英文が ${missing.length} 件あります`, missing);
+  if (missing.length > 0) console.warn(`[5minEnglish] 日本語訳が未登録の英文が ${missing.length} 件あります`, missing);
   return missing;
 }
 
@@ -1550,7 +1550,7 @@ function updateCalendarLink() {
   const end = todayKey.replace(/-/g, "") + "T" + String(Math.floor(endMinutes / 60)).padStart(2, "0") + String(endMinutes % 60).padStart(2, "0") + "00";
   const url = new URL("https://calendar.google.com/calendar/render");
   url.searchParams.set("action", "TEMPLATE");
-  url.searchParams.set("text", "英語学習 (Fluent Path)");
+  url.searchParams.set("text", "英語学習 (5分英語)");
   url.searchParams.set("details", "今日の単語10枚と4技能課題");
   url.searchParams.set("dates", `${start}/${end}`);
   url.searchParams.set("recur", "RRULE:FREQ=DAILY");
@@ -1562,7 +1562,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `fluent-path-backup-${todayKey}.json`;
+  link.download = `5min-english-backup-${todayKey}.json`;
   link.click();
   URL.revokeObjectURL(url);
   toast("バックアップを書き出しました");
@@ -1584,7 +1584,7 @@ function importData(file) {
       if (state.level) setSkill(activeSkill);
       toast("データを読み込みました");
     } catch {
-      toast("読み込めませんでした。Fluent Pathの書き出しファイルを選んでください。");
+      toast("読み込めませんでした。5分英語の書き出しファイルを選んでください。");
     }
   };
   reader.readAsText(file);
