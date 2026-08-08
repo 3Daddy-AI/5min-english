@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=9" />
+    <link rel="stylesheet" href="styles.css?v=10" />
   </head>
   <body>
     <div class="app-shell">
@@ -176,11 +176,10 @@
               <p class="vocab-example" id="vocabExample"></p>
               <p class="vocab-example-ja" id="vocabExampleJa" hidden></p>
               <p class="vocab-answer" id="vocabAnswer" hidden></p>
+              <div class="choice-row" id="vocabChoices"></div>
               <div class="tool-row vocab-tools">
                 <button class="icon-button" id="vocabSpeakButton" type="button" aria-label="発音を聞く">🔊</button>
-                <button class="primary-button" id="vocabRevealButton" type="button">意味を見る</button>
-                <button class="ghost-button vocab-grade" id="vocabKnownButton" type="button" hidden>😎 覚えてた</button>
-                <button class="ghost-button vocab-grade" id="vocabAgainButton" type="button" hidden>🙈 まだ</button>
+                <button class="primary-button" id="vocabNextButton" type="button" hidden>次の単語へ</button>
               </div>
             </div>
             <aside class="feedback-box vocab-side">
@@ -216,7 +215,8 @@
                 <button class="icon-button" id="playSlowButton" type="button" aria-label="ゆっくり再生">🐢</button>
                 <span class="listen-note" id="listenCount"></span>
               </div>
-              <div class="answer-tools">
+              <div class="choice-row" id="readingChoices" hidden></div>
+              <div class="answer-tools" id="answerTools">
                 <textarea id="skillAnswer" rows="5" placeholder="Type your answer or speaking script..."></textarea>
                 <div class="tool-row">
                   <button class="primary-button" id="checkAnswerButton" type="button">回答をチェック</button>
@@ -335,6 +335,6 @@
     </div>
 
     <script type="module" src="cloud.js?v=1"></script>
-    <script defer src="app.js?v=7"></script>
+    <script defer src="app.js?v=8"></script>
   </body>
 </html>

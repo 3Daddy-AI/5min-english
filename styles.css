@@ -807,6 +807,50 @@ button.daily-task:nth-child(even) {
   flex-wrap: wrap;
 }
 
+.choice-row {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.choice-button {
+  padding: 12px 16px;
+  border: 3px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.choice-button:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(22, 18, 28, 0.9);
+}
+
+.choice-button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(22, 18, 28, 0.9);
+}
+
+.choice-button:disabled {
+  cursor: default;
+}
+
+.choice-button.is-correct {
+  background: var(--green);
+  color: var(--ink);
+}
+
+.choice-button.is-wrong {
+  background: var(--red);
+  color: #fffdf5;
+  text-shadow: 1px 1px 0 rgba(22, 18, 28, 0.35);
+}
+
 .tag {
   display: inline-flex;
   align-items: center;

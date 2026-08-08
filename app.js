@@ -7,6 +7,7 @@ const SKILLS = ["speaking", "writing", "reading", "listening"];
 const UNITS = ["vocab", ...SKILLS];
 const DIAG_ANSWERS = { vocab: "b", grammar: "b" };
 const VOCAB_DAILY = 10;
+const VOCAB_NEW_PER_DAY = 4; // 復習が溜まっていても、新出単語は最低これだけ毎日出す
 const SRS_INTERVALS = [0, 1, 2, 4, 7, 15]; // box(1-5) -> 次回までの日数
 
 const goalMeta = {
@@ -35,9 +36,9 @@ const taskPools = {
         { t: "タクシーの手配", p: "明日朝9時に空港行きのタクシーをフロントに頼むメッセージを書いてください。部屋番号は502です。", m: "Hi, could you book a taxi to the airport for 9 a.m. tomorrow? My room number is 502.", k: ["could you", "taxi", "tomorrow"] }
       ],
       reading: [
-        { t: "駅の掲示を読む", x: "The 9:15 train to Boston is delayed by 20 minutes. Passengers for New York, please transfer at Central Station, platform 4.", p: "何分遅れで、どこで乗り換えるべきか、英語1〜2文でまとめてください。", m: "The train is delayed by 20 minutes, and I should transfer at Central Station on platform 4.", k: ["20 minutes", "central station", "platform 4"] },
-        { t: "ホテルの案内を読む", x: "Breakfast is served from 6:30 to 10:00 on the 2nd floor. The pool is closed on Mondays.", p: "朝食とプールについて分かったことを英語でまとめてください。", m: "Breakfast is on the second floor from 6:30 to 10:00, and the pool is closed on Mondays.", k: ["6:30", "second floor", "monday"] },
-        { t: "空港の標識を読む", x: "Passengers with connecting flights should proceed to Gate B12. Please have your boarding pass ready.", p: "自分が何をすべきか、英語1文で書いてください。", m: "I should go to Gate B12 and have my boarding pass ready.", k: ["b12", "boarding pass"] }
+        { t: "駅の掲示を読む", x: "The 9:15 train to Boston is delayed by 20 minutes. Passengers for New York, please transfer at Central Station, platform 4.", q: "掲示によると、何分遅れで、どこで乗り換えるべき？", choices: ["20分遅れで、セントラル駅の4番線で乗り換える", "10分遅れで、セントラル駅の2番線で乗り換える", "20分遅れだが、乗り換えの必要はない"], correct: 0 },
+        { t: "ホテルの案内を読む", x: "Breakfast is served from 6:30 to 10:00 on the 2nd floor. The pool is closed on Mondays.", q: "案内によると、朝食とプールについて正しいのは？", choices: ["朝食は1階で7:00〜10:00、プールは日曜休み", "朝食は2階で6:30〜10:00、プールは月曜休み", "朝食は2階で6:30〜10:00、プールは無休"], correct: 1 },
+        { t: "空港の標識を読む", x: "Passengers with connecting flights should proceed to Gate B12. Please have your boarding pass ready.", q: "掲示によると、乗り継ぎ客がすべきことは？", choices: ["B12ゲートへ行き、搭乗券を用意しておく", "B21ゲートへ行き、パスポートを用意しておく", "そのまま自分の到着ゲートで待つ"], correct: 0 }
       ],
       listening: [
         { t: "搭乗アナウンス", s: "Attention passengers. Flight 208 to Chicago is now boarding at gate 15." },
@@ -57,9 +58,9 @@ const taskPools = {
         { t: "宿泊レビューを書く", p: "立地とスタッフは良かったが部屋は写真より狭かった、それでもまた泊まりたい、というレビューを書いてください。", m: "The location was perfect and the staff were friendly. However, the room was smaller than the photos. Overall, I would stay here again.", k: ["however", "overall", "would"] }
       ],
       reading: [
-        { t: "運休のお知らせ", x: "Due to a strike, all trains on the Blue Line are suspended this weekend. Replacement buses run every 30 minutes from the main square, but expect delays of up to one hour.", p: "自分の移動プランをどう変えるべきか、英語でまとめてください。", m: "Trains on the Blue Line are suspended, so I should take a replacement bus from the main square and allow up to an extra hour.", k: ["suspended", "bus", "hour"] },
-        { t: "旅行保険の注意書き", x: "This policy covers medical costs up to $50,000 but does not cover lost baggage unless it was checked in.", p: "この保険で何がカバーされ、何が条件付きか、英語でまとめてください。", m: "Medical costs are covered up to $50,000, but lost baggage is only covered if it was checked in.", k: ["50,000", "baggage", "checked"] },
-        { t: "免税のルール", x: "Visitors may claim a tax refund on purchases over $100 made at participating stores. Keep your receipts and show them at the airport counter before check-in.", p: "免税を受けるために自分がすべきことを英語でまとめてください。", m: "I can get a tax refund on purchases over $100 if I keep my receipts and show them at the airport before check-in.", k: ["refund", "100", "receipts"] }
+        { t: "運休のお知らせ", x: "Due to a strike, all trains on the Blue Line are suspended this weekend. Replacement buses run every 30 minutes from the main square, but expect delays of up to one hour.", q: "お知らせによると、正しい対応は？", choices: ["ブルーラインは運休なので、メイン広場から代替バスに乗り、最大1時間の余裕を見る", "ブルーラインは通常運行だが、本数が半分になる", "代替バスはメイン広場ではなく、駅から出ている"], correct: 0 },
+        { t: "旅行保険の注意書き", x: "This policy covers medical costs up to $50,000 but does not cover lost baggage unless it was checked in.", q: "この保険について正しいのは？", choices: ["医療費も荷物の紛失も、条件なく全額補償される", "医療費は5万ドルまで補償されるが、荷物の紛失は預け入れた場合のみ補償される", "医療費は補償されないが、荷物の紛失は全額補償される"], correct: 1 },
+        { t: "免税のルール", x: "Visitors may claim a tax refund on purchases over $100 made at participating stores. Keep your receipts and show them at the airport counter before check-in.", q: "免税を受けるために必要なことは？", choices: ["レシートは不要だが、パスポートの提示が必要", "チェックイン後に、税関で申請書を提出する", "レシートを保管し、チェックイン前に空港カウンターで提示する"], correct: 2 }
       ],
       listening: [
         { t: "バスの経路変更", s: "Ladies and gentlemen, due to heavy traffic, this bus will take a different route. If you need City Museum, please get off at the next stop." },
@@ -81,9 +82,9 @@ const taskPools = {
         { t: "打ち合わせの日程調整", p: "火曜14時を提案し、ダメなら木曜午前も空いていると伝える返信を書いてください。", m: "Thank you for your email. How about Tuesday at 2 p.m.? If that doesn't work, I'm also free on Thursday morning.", k: ["how about", "work", "free"] }
       ],
       reading: [
-        { t: "予定変更のメモ", x: "Team, the client moved our demo from May 10 to May 8. Please finish the slides by May 6 and send them to Anna for review.", p: "新しい締切と提出先を英語でまとめてください。", m: "The demo is now on May 8, so the slides are due May 6 and should go to Anna.", k: ["may 8", "may 6", "anna"] },
-        { t: "経費ルールの変更", x: "Starting next month, all expense reports must be submitted online by the 25th. Paper forms will no longer be accepted.", p: "何がどう変わるのか、英語でまとめてください。", m: "From next month, expense reports must be submitted online by the 25th, and paper forms won't be accepted.", k: ["online", "25th", "paper"] },
-        { t: "オフィス閉鎖の連絡", x: "The office will be closed on Friday for maintenance. Please work from home and keep Slack open during business hours.", p: "金曜に自分がすべきことを英語でまとめてください。", m: "The office is closed on Friday, so we should work from home and stay available on Slack.", k: ["friday", "home", "slack"] }
+        { t: "予定変更のメモ", x: "Team, the client moved our demo from May 10 to May 8. Please finish the slides by May 6 and send them to Anna for review.", q: "メモによると、新しい締切と提出先は？", choices: ["5月8日までにスライドを完成させ、上司に送る", "5月6日までにスライドを完成させ、アンナに送る", "5月10日までにスライドを完成させ、クライアントに送る"], correct: 1 },
+        { t: "経費ルールの変更", x: "Starting next month, all expense reports must be submitted online by the 25th. Paper forms will no longer be accepted.", q: "変更後のルールとして正しいのは？", choices: ["来月から経費報告は紙のみになり、オンラインは廃止される", "経費報告の締切は25日から月末に延長される", "来月から経費報告はオンラインで25日までに提出し、紙の用紙は使えない"], correct: 2 },
+        { t: "オフィス閉鎖の連絡", x: "The office will be closed on Friday for maintenance. Please work from home and keep Slack open during business hours.", q: "連絡によると、金曜日にすべきことは？", choices: ["在宅勤務にし、業務時間中はSlackを開いておく", "オフィスに出社し、通常通り勤務する", "休暇を取り、Slackも確認しなくてよい"], correct: 0 }
       ],
       listening: [
         { t: "会議の冒頭", s: "Let's start the meeting. First, a quick update on the schedule. The release date moves to next Wednesday." },
@@ -103,9 +104,9 @@ const taskPools = {
         { t: "提案を断るメール", p: "提案への感謝を伝えつつ今回は見送ること、今後の協業に期待することを丁寧に書いてください。", m: "Thank you for the proposal. After careful consideration, we have decided not to move forward this time. We appreciate your effort and hope to work together in the future.", k: ["consideration", "move forward", "appreciate"] }
       ],
       reading: [
-        { t: "契約条件を読む", x: "The new vendor offers a 15% discount for annual contracts, but the cancellation fee is high: 50% of the remaining balance. Legal suggests a 6-month pilot before committing.", p: "リスクと安全策を英語でまとめてください。", m: "The discount is attractive, but the cancellation fee is risky, so a 6-month pilot is the safer option.", k: ["discount", "cancellation", "pilot"] },
-        { t: "業績レポートを読む", x: "Q2 revenue grew 8% year over year, driven by the enterprise segment. However, churn in the small-business segment rose to 6%, which may offset gains next quarter.", p: "好材料と懸念材料を英語でまとめてください。", m: "Revenue grew 8% thanks to enterprise, but rising small-business churn could offset that next quarter.", k: ["8%", "churn", "offset"] },
-        { t: "セキュリティ通達を読む", x: "Following the security audit, all staff must enable two-factor authentication by March 15. Accounts without it will be suspended until IT confirms compliance.", p: "全員が何をいつまでにすべきか、しないとどうなるかを英語でまとめてください。", m: "Everyone must enable two-factor authentication by March 15 or their accounts will be suspended.", k: ["two-factor", "march 15", "suspended"] }
+        { t: "契約条件を読む", x: "The new vendor offers a 15% discount for annual contracts, but the cancellation fee is high: 50% of the remaining balance. Legal suggests a 6-month pilot before committing.", q: "この契約について、法務部の提案は？", choices: ["割引率をさらに上げるよう交渉する", "即座に本契約を結び、割引を最大化する", "解約料が高いリスクがあるため、まず6ヶ月の試験導入を行う"], correct: 2 },
+        { t: "業績レポートを読む", x: "Q2 revenue grew 8% year over year, driven by the enterprise segment. However, churn in the small-business segment rose to 6%, which may offset gains next quarter.", q: "レポートの内容として正しいのは？", choices: ["売上は法人部門により8%増加したが、中小企業の解約率が6%に上昇した", "売上は中小企業部門により8%増加し、解約率はどの部門も低下した", "売上は前年比で減少したが、解約率は改善した"], correct: 0 },
+        { t: "セキュリティ通達を読む", x: "Following the security audit, all staff must enable two-factor authentication by March 15. Accounts without it will be suspended until IT confirms compliance.", q: "通達によると、3月15日までにすべきことは？", choices: ["パスワードを変更する。しないと罰金が科される", "二要素認証は任意で、設定しなくても問題ない", "二要素認証を有効にする。しないとアカウントが停止される"], correct: 2 }
       ],
       listening: [
         { t: "会議での反対意見", s: "Before we close, one concern. If we cut the testing phase, support tickets may increase. I suggest we keep the original schedule." },
@@ -127,9 +128,9 @@ const taskPools = {
         { t: "掲示板で仲間募集", p: "コースの掲示板で、勉強会に参加したいと投稿してください。", m: "Hi everyone, I'm new to this course. I'm interested in joining a study group. Is anyone meeting this week?", k: ["new", "study group", "anyone"] }
       ],
       reading: [
-        { t: "課題の要件を読む", x: "The essay is due on Friday at 5 p.m. It should be 500 words and include at least two sources. Late work loses 10% per day.", p: "課題の条件を英語でまとめてください。", m: "The 500-word essay with two sources is due Friday at 5 p.m., and late work loses 10% per day.", k: ["friday", "500", "sources"] },
-        { t: "教科書の要点を読む", x: "Chapter 3 argues that habits form through repetition and reward. The author gives the example of morning exercise becoming automatic after 60 days.", p: "この章の主張を英語で要約してください。", m: "The chapter says habits form through repetition and reward, like exercise becoming automatic after 60 days.", k: ["repetition", "reward", "automatic"] },
-        { t: "オフィスアワー案内", x: "Office hours are Tuesdays 2-4 p.m. Book a slot online. For quick questions, use the course forum, where TAs reply within 24 hours.", p: "質問したいとき、どんな選択肢があるか英語でまとめてください。", m: "I can book office hours on Tuesdays or ask quick questions on the forum, where TAs reply within a day.", k: ["tuesday", "forum", "24"] }
+        { t: "課題の要件を読む", x: "The essay is due on Friday at 5 p.m. It should be 500 words and include at least two sources. Late work loses 10% per day.", q: "課題の条件として正しいのは？", choices: ["500語で出典2つ、金曜17時締切。遅れると1日10%減点される", "300語で出典1つ、月曜9時締切。遅れても減点はない", "500語で出典不要、金曜17時締切。遅れると提出不可になる"], correct: 0 },
+        { t: "教科書の要点を読む", x: "Chapter 3 argues that habits form through repetition and reward. The author gives the example of morning exercise becoming automatic after 60 days.", q: "この章の主張として正しいのは？", choices: ["習慣は意志の力だけで作られ、反復は関係ない", "習慣は反復と報酬によって形成され、例えば運動は60日で自動的になる", "習慣が身につくまでには、最低1年はかかる"], correct: 1 },
+        { t: "オフィスアワー案内", x: "Office hours are Tuesdays 2-4 p.m. Book a slot online. For quick questions, use the course forum, where TAs reply within 24 hours.", q: "質問したいときの選択肢として正しいのは？", choices: ["毎日いつでもオフィスアワーがあり、予約は不要", "火曜のオフィスアワーを予約するか、掲示板で質問すればTAが24時間以内に返信する", "質問はメールのみで受け付け、返信は1週間かかる"], correct: 1 }
       ],
       listening: [
         { t: "授業の始まり", s: "Today we will cover chapter five. Before that, please hand in your homework from last week." },
@@ -149,9 +150,9 @@ const taskPools = {
         { t: "奨学金エッセイの核", p: "自分の目標と、このプログラムでなければならない理由を3文で書いてください。", m: "Studying abroad will help me bridge my engineering background with global experience. My goal is to develop affordable water filters, and this program offers the exact lab experience I need.", k: ["goal", "experience", "program"] }
       ],
       reading: [
-        { t: "研究結果を読む", x: "The study followed 2,000 students over three years. Those who slept fewer than six hours scored 12% lower on average. However, the authors note that stress, not sleep alone, may explain part of the gap.", p: "結果と、その解釈の注意点を英語でまとめてください。", m: "Students sleeping under six hours scored 12% lower, but stress may explain part of the difference.", k: ["six hours", "12%", "stress"] },
-        { t: "賛否のある理論を読む", x: "Critics argue the theory ignores cultural context. Supporters respond that its core claims have been replicated in over 30 countries, though effect sizes vary widely.", p: "批判側と擁護側の主張を対比して英語でまとめてください。", m: "Critics say it ignores culture, while supporters point to replications in 30 countries with varying effect sizes.", k: ["critics", "replicated", "vary"] },
-        { t: "学部の提案を読む", x: "Enrollment in humanities has fallen 25% in a decade. The dean proposes joint degrees with computer science, arguing that employers value writing plus technical skills.", p: "背景と提案を英語でまとめてください。", m: "Humanities enrollment fell 25%, so the dean proposes joint degrees with computer science to add technical skills.", k: ["25%", "joint", "computer science"] }
+        { t: "研究結果を読む", x: "The study followed 2,000 students over three years. Those who slept fewer than six hours scored 12% lower on average. However, the authors note that stress, not sleep alone, may explain part of the gap.", q: "この研究について正しいのは？", choices: ["睡眠時間はスコアに一切影響しないことが分かった", "睡眠6時間未満の学生の方が、スコアが12%高かった", "睡眠6時間未満の学生はスコアが12%低かったが、その差の一部はストレスで説明できる可能性がある"], correct: 2 },
+        { t: "賛否のある理論を読む", x: "Critics argue the theory ignores cultural context. Supporters respond that its core claims have been replicated in over 30 countries, though effect sizes vary widely.", q: "批判側と擁護側の主張として正しいのは？", choices: ["批判側も擁護側も、この理論は完全に誤りだと結論づけている", "批判側は文化的文脈の無視を指摘し、擁護側は30ヶ国以上での再現性を主張する", "擁護側は文化を無視していると認め、批判側は再現性を主張している"], correct: 1 },
+        { t: "学部の提案を読む", x: "Enrollment in humanities has fallen 25% in a decade. The dean proposes joint degrees with computer science, arguing that employers value writing plus technical skills.", q: "学部長の提案の背景として正しいのは？", choices: ["人文系の人気が上昇したため、定員を増やす提案をしている", "人文系を廃止し、コンピュータサイエンス学部に統合する提案をしている", "人文系の在籍者が10年で25%減少したため、コンピュータサイエンスとの共同学位を提案している"], correct: 2 }
       ],
       listening: [
         { t: "講義の構成を聞く", s: "There are three main causes of the revolution. Economic pressure, new ideas, and a weak government. Let's start with the economy." },
@@ -173,9 +174,9 @@ const taskPools = {
         { t: "Eメール問題", p: "ワークショップへの招待に、お礼→出席の意思→持ち物の質問、の順で返信してください。", m: "Dear Mr. Smith, thank you for your invitation. I would be happy to attend the workshop on Saturday. Could you tell me what I should bring?", k: ["thank you for", "happy to", "could you"] }
       ],
       reading: [
-        { t: "お知らせ問題", x: "The city library will move to a new building in September. During August, all books must be returned, and online services will pause for two weeks.", p: "いつ何が起きるかを英語でまとめてください。", m: "The library moves in September, books are due back in August, and online services stop for two weeks.", k: ["september", "august", "two weeks"] },
-        { t: "手続きの読み取り", x: "To register for the exam, create an account, upload a photo, and pay the fee by June 1. Late registration costs an extra $30.", p: "期限と、遅れた場合どうなるかを英語でまとめてください。", m: "I must register and pay by June 1, or pay an extra $30 for late registration.", k: ["june 1", "extra", "30"] },
-        { t: "文脈から語義推測", x: "The manager was reluctant to approve the budget, asking for more data twice before finally agreeing.", p: "reluctant の意味を、文脈から英語で説明してください。", m: "Reluctant means unwilling or hesitant to do something.", k: ["unwilling", "hesitant"] }
+        { t: "お知らせ問題", x: "The city library will move to a new building in September. During August, all books must be returned, and online services will pause for two weeks.", q: "お知らせの内容として正しいのは？", choices: ["図書館は8月に移転し、9月中に本を返却する", "図書館は9月に移転し、8月中に本を返却、オンラインサービスは2週間停止する", "図書館の移転に伴い、オンラインサービスは今後廃止される"], correct: 1 },
+        { t: "手続きの読み取り", x: "To register for the exam, create an account, upload a photo, and pay the fee by June 1. Late registration costs an extra $30.", q: "手続きについて正しいのは？", choices: ["6月1日までに登録すれば、支払いは後払いでよい", "写真のアップロードは任意で、なくても登録できる", "6月1日までに登録と支払いを済ませないと、追加で30ドルかかる"], correct: 2 },
+        { t: "文脈から語義推測", x: "The manager was reluctant to approve the budget, asking for more data twice before finally agreeing.", q: "reluctant の意味として最も近いのは？", choices: ["積極的で乗り気な", "気が進まない・ためらっている", "怒っている・苛立っている"], correct: 1 }
       ],
       listening: [
         { t: "場面推測の練習", s: "Question one. Where does the conversation probably take place? Listen carefully to words like menu, order, and bill." },
@@ -195,9 +196,9 @@ const taskPools = {
         { t: "2時点のグラフ比較", p: "「2000年と2020年のエネルギー源構成（石炭45%→20%、再エネ3倍、ガス25%横ばい）」を比較して書いてください。", m: "The chart compares energy sources in 2000 and 2020. Coal fell sharply from 45% to 20%, while renewables tripled. Gas remained stable at around 25%.", k: ["compares", "while", "remained"] }
       ],
       reading: [
-        { t: "通説への反証を読む", x: "Paragraph 2 contradicts the common belief that multitasking saves time. In experiments, switching tasks added up to 40% more completion time, especially for complex work.", p: "筆者の主張と根拠を英語でまとめてください。", m: "Multitasking actually wastes time; switching added up to 40% more time on complex tasks.", k: ["40%", "switching", "complex"] },
-        { t: "譲歩と主張を読む", x: "While the author concedes that tourism brings revenue, she maintains that unregulated growth damages the very sites tourists come to see, citing Venice as a cautionary tale.", p: "筆者が認めている点と、それでも主張している点をまとめてください。", m: "The author admits tourism earns money but argues unregulated growth destroys the attractions, using Venice as an example.", k: ["revenue", "unregulated", "venice"] },
-        { t: "因果関係の罠を読む", x: "The correlation between coffee and longevity disappeared once researchers controlled for income and exercise, suggesting earlier studies confused cause and effect.", p: "この研究が示したことを英語でまとめてください。", m: "After controlling for income and exercise, the coffee-longevity link vanished, so earlier studies likely mixed up cause and effect.", k: ["controlled", "disappeared", "cause"] }
+        { t: "通説への反証を読む", x: "Paragraph 2 contradicts the common belief that multitasking saves time. In experiments, switching tasks added up to 40% more completion time, especially for complex work.", q: "筆者の主張として正しいのは？", choices: ["マルチタスクは常に時間を節約し、効率を40%高める", "マルチタスクの影響は、単純な作業でのみ現れる", "マルチタスクは時間を節約せず、切り替えによって複雑な作業では最大40%多く時間がかかる"], correct: 2 },
+        { t: "譲歩と主張を読む", x: "While the author concedes that tourism brings revenue, she maintains that unregulated growth damages the very sites tourists come to see, citing Venice as a cautionary tale.", q: "筆者が認めている点と主張している点として正しいのは？", choices: ["観光は収益を生まないと主張し、規制強化のみを訴えている", "観光が収益を生むことは認めつつ、規制のない成長が観光地を損なうと主張している", "観光の収益も、規制のない成長による損害も、どちらも否定している"], correct: 1 },
+        { t: "因果関係の罠を読む", x: "The correlation between coffee and longevity disappeared once researchers controlled for income and exercise, suggesting earlier studies confused cause and effect.", q: "この研究が示したこととして正しいのは？", choices: ["コーヒーが長寿の直接の原因であることが、この研究で証明された", "運動だけが長寿に関係し、収入もコーヒーも無関係だと分かった", "収入と運動を調整すると、コーヒーと長寿の関連は消え、初期の研究は因果を取り違えていた可能性がある"], correct: 2 }
       ],
       listening: [
         { t: "主張と根拠を聞く", s: "The speaker argues that paper books will survive, mainly because readers remember more when they turn physical pages." },
@@ -219,9 +220,9 @@ const taskPools = {
         { t: "遊びの計画を提案", p: "土曜の映画（19時の新作アクション）と、その後の夕食に誘うメッセージを書いてください。", m: "Do you want to see a movie this Saturday? There's a new action film at 7. We could grab dinner after.", k: ["do you want", "there's", "after"] }
       ],
       reading: [
-        { t: "SNSの報告投稿", x: "Finally finished my first 10K run! My legs are dead but I'm so proud. Next goal: half marathon in October.", p: "投稿者の気持ちと次の目標を英語でまとめてください。", m: "They finished their first 10K, feel proud though tired, and now aim for a half marathon in October.", k: ["10k", "proud", "october"] },
-        { t: "友達からの連絡", x: "Hey, party's moved to Sam's place, same time. Bring something to drink. Oh, and it's a surprise, so don't text Alex!", p: "変更点と注意点を英語でまとめてください。", m: "The party is now at Sam's place at the same time; bring drinks and keep it secret from Alex.", k: ["sam", "drink", "alex"] },
-        { t: "カフェのレビュー", x: "New cafe alert: great flat white, quiet upstairs seating, free wifi. A bit pricey though. Perfect for remote work days.", p: "このカフェの長所と短所を英語でまとめてください。", m: "The new cafe has good coffee, quiet seats, and wifi, but it's a little expensive.", k: ["quiet", "wifi", "pricey"] }
+        { t: "SNSの報告投稿", x: "Finally finished my first 10K run! My legs are dead but I'm so proud. Next goal: half marathon in October.", q: "投稿の内容として正しいのは？", choices: ["10kmランに失敗し、次はもう挑戦しないと決めた", "初めての10kmランを完走して誇らしく思っており、次は10月のハーフマラソンを目指している", "ハーフマラソンを完走し、次は10kmに挑戦する予定"], correct: 1 },
+        { t: "友達からの連絡", x: "Hey, party's moved to Sam's place, same time. Bring something to drink. Oh, and it's a surprise, so don't text Alex!", q: "連絡の内容として正しいのは？", choices: ["パーティーは中止になり、代わりにサムの家に集まって飲むだけ", "パーティーの時間が変更になり、場所は変わらない", "パーティーはサムの家に変更、時間は同じ。飲み物を持参し、アレックスには秘密にする"], correct: 2 },
+        { t: "カフェのレビュー", x: "New cafe alert: great flat white, quiet upstairs seating, free wifi. A bit pricey though. Perfect for remote work days.", q: "レビューの内容として正しいのは？", choices: ["コーヒーは普通だが、とても安くて席も騒がしい", "コーヒーが美味しく、静かな席とwifiがあるが、少し値段が高い", "wifiがなく、リモートワークには向いていない"], correct: 1 }
       ],
       listening: [
         { t: "待ち合わせの一言", s: "Hey, sorry I'm late. The train stopped for ten minutes. Did you order already?" },
@@ -241,9 +242,9 @@ const taskPools = {
         { t: "おすすめを紹介する", p: "気に入った本の流れで『Deep Work』を薦め、自分がどう変わったか、貸す約束も添えてください。", m: "If you liked that book, you should try Deep Work. It changed how I plan my mornings. I'll lend you my copy next time we meet.", k: ["you should try", "changed", "lend"] }
       ],
       reading: [
-        { t: "海外移住の投稿", x: "Not gonna lie, moving abroad alone was terrifying at first. Three months in, I finally have a routine: morning market, work, evening runs by the river. Homesick? Sometimes. Regrets? Zero.", p: "投稿者の3ヶ月間の変化を英語でまとめてください。", m: "They were scared about moving abroad, but after three months they have a routine, sometimes miss home, and have no regrets.", k: ["terrifying", "routine", "regrets"] },
-        { t: "グループへの連絡", x: "PSA for the group: the hiking trail we planned is closed after last week's storm. Plan B is the coastal path. Slightly longer but the views are unreal. Meet at 8 sharp.", p: "予定の変更点を英語でまとめてください。", m: "The original trail is closed, so the group will take the longer coastal path, meeting at 8.", k: ["closed", "coastal", "8"] },
-        { t: "あえての逆張り投稿", x: "Hot take: brunch is overrated. You wait an hour for eggs you could make at home. Give me a quiet morning coffee and a good bakery any day.", p: "投稿者の主張と理由を英語でまとめてください。", m: "They think brunch is overrated because of the wait, preferring coffee and a bakery instead.", k: ["overrated", "wait", "coffee"] }
+        { t: "海外移住の投稿", x: "Not gonna lie, moving abroad alone was terrifying at first. Three months in, I finally have a routine: morning market, work, evening runs by the river. Homesick? Sometimes. Regrets? Zero.", q: "投稿者の3ヶ月間の変化として正しいのは？", choices: ["3ヶ月経っても不安は消えず、帰国を考えている", "最初から順調で、一度も不安を感じたことがない", "最初は怖かったが、3ヶ月後には生活リズムができ、後悔はしていない"], correct: 2 },
+        { t: "グループへの連絡", x: "PSA for the group: the hiking trail we planned is closed after last week's storm. Plan B is the coastal path. Slightly longer but the views are unreal. Meet at 8 sharp.", q: "連絡の内容として正しいのは？", choices: ["元のコースはそのまま使えるが、集合時間が早まった", "元のコースは閉鎖されたため、より長い海岸沿いの道を8時集合で歩く", "ハイキング自体が中止になった"], correct: 1 },
+        { t: "あえての逆張り投稿", x: "Hot take: brunch is overrated. You wait an hour for eggs you could make at home. Give me a quiet morning coffee and a good bakery any day.", q: "投稿者の主張として正しいのは？", choices: ["ブランチは最高だと絶賛し、毎週行くべきだと勧めている", "家で作る卵料理はまずいので、ブランチの方が良いと主張している", "待ち時間が長いのでブランチは過大評価だと考え、コーヒーとパン屋を好んでいる"], correct: 2 }
       ],
       listening: [
         { t: "予定外の夜の話", s: "So the movie was sold out, and we ended up at a jazz bar next door. Best accident ever. You have to come next time." },
@@ -273,7 +274,31 @@ const vocabDecks = {
     { w: "charge", ja: "料金・請求（する）", ex: "Is there an extra charge for breakfast?", exj: "朝食には追加料金がかかりますか。" },
     { w: "platform", ja: "（駅の）ホーム・番線", ex: "The train leaves from platform 4.", exj: "その列車は4番線から発車します。" },
     { w: "customs", ja: "税関", ex: "You have to go through customs first.", exj: "まず税関を通る必要があります。" },
-    { w: "out of order", ja: "故障中", ex: "The elevator is out of order.", exj: "そのエレベーターは故障中です。" }
+    { w: "out of order", ja: "故障中", ex: "The elevator is out of order.", exj: "そのエレベーターは故障中です。" },
+    { w: "itinerary", ja: "旅程", ex: "Could you send me the full itinerary before we leave?", exj: "出発前に旅程表をすべて送っていただけますか。" },
+    { w: "currency", ja: "通貨", ex: "What's the local currency here?", exj: "ここの現地通貨は何ですか。" },
+    { w: "exchange rate", ja: "為替レート", ex: "The exchange rate changes every day.", exj: "為替レートは毎日変わります。" },
+    { w: "checkout", ja: "チェックアウト", ex: "What time is checkout tomorrow?", exj: "明日のチェックアウトは何時ですか。" },
+    { w: "vacancy", ja: "空室", ex: "Do you have any vacancy for tonight?", exj: "今夜、空室はありますか。" },
+    { w: "connecting flight", ja: "乗り継ぎ便", ex: "I have a connecting flight in two hours.", exj: "2時間後に乗り継ぎ便があります。" },
+    { w: "round trip", ja: "往復", ex: "I'd like a round trip ticket to Boston.", exj: "ボストン行きの往復チケットをお願いします。" },
+    { w: "one-way", ja: "片道", ex: "Is this ticket one-way or round trip?", exj: "このチケットは片道ですか、往復ですか。" },
+    { w: "window seat", ja: "窓側の席", ex: "Could I have a window seat, please?", exj: "窓側の席をいただけますか。" },
+    { w: "aisle seat", ja: "通路側の席", ex: "I prefer an aisle seat for long flights.", exj: "長時間のフライトでは通路側の席がいいです。" },
+    { w: "baggage claim", ja: "手荷物受取所", ex: "Where is the baggage claim area?", exj: "手荷物受取所はどこですか。" },
+    { w: "security check", ja: "保安検査", ex: "Please remove your shoes at the security check.", exj: "保安検査では靴を脱いでください。" },
+    { w: "passport control", ja: "出入国審査", ex: "Passport control is on the second floor.", exj: "出入国審査は2階です。" },
+    { w: "souvenir", ja: "お土産", ex: "I want to buy some souvenirs for my family.", exj: "家族へのお土産をいくつか買いたいです。" },
+    { w: "sightseeing", ja: "観光", ex: "We spent the whole day sightseeing downtown.", exj: "一日中ダウンタウンを観光して過ごしました。" },
+    { w: "guided tour", ja: "ガイド付きツアー", ex: "Is there a guided tour of the castle?", exj: "お城のガイド付きツアーはありますか。" },
+    { w: "local specialty", ja: "名物・特産品", ex: "What's a local specialty I should try?", exj: "試すべき名物は何ですか。" },
+    { w: "tip", ja: "チップ", ex: "Is it common to leave a tip here?", exj: "ここではチップを渡すのが一般的ですか。" },
+    { w: "currency exchange", ja: "両替所", ex: "Where can I find a currency exchange office?", exj: "両替所はどこにありますか。" },
+    { w: "overbooked", ja: "オーバーブッキングの", ex: "I'm sorry, this flight is overbooked.", exj: "申し訳ありませんが、この便はオーバーブッキングです。" },
+    { w: "layover", ja: "乗り継ぎ待ち時間", ex: "We have a three-hour layover in Dallas.", exj: "ダラスで3時間の乗り継ぎ待ちがあります。" },
+    { w: "non-smoking", ja: "禁煙の", ex: "Could I have a non-smoking room?", exj: "禁煙の部屋をお願いできますか。" },
+    { w: "valid", ja: "有効な", ex: "Is my passport still valid for this trip?", exj: "私のパスポートはこの旅行に対してまだ有効ですか。" },
+    { w: "lost and found", ja: "遺失物取扱所", ex: "I left my bag on the train. Where's the lost and found?", exj: "電車にバッグを忘れました。遺失物取扱所はどこですか。" }
   ],
   business: [
     { w: "deadline", ja: "締切", ex: "The deadline for the report is Friday.", exj: "レポートの締切は金曜日です。" },
@@ -291,7 +316,31 @@ const vocabDecks = {
     { w: "estimate", ja: "見積もり（る）", ex: "Could you send us an estimate by Friday?", exj: "金曜までに見積もりを送っていただけますか。" },
     { w: "urgent", ja: "至急の", ex: "This is urgent, so please reply today.", exj: "これは至急なので、今日中に返信してください。" },
     { w: "task", ja: "作業・タスク", ex: "I have three tasks left for today.", exj: "今日はあと3つタスクが残っています。" },
-    { w: "schedule", ja: "予定（を組む）", ex: "Let me check my schedule first.", exj: "まず予定を確認させてください。" }
+    { w: "schedule", ja: "予定（を組む）", ex: "Let me check my schedule first.", exj: "まず予定を確認させてください。" },
+    { w: "invoice", ja: "請求書", ex: "Please send the invoice by the end of the month.", exj: "月末までに請求書を送ってください。" },
+    { w: "colleague", ja: "同僚", ex: "I discussed the plan with my colleague first.", exj: "まず同僚とその計画について話し合いました。" },
+    { w: "onboarding", ja: "新人研修・オンボーディング", ex: "Onboarding for new hires starts next Monday.", exj: "新入社員のオンボーディングは来週月曜に始まります。" },
+    { w: "stakeholder", ja: "利害関係者", ex: "We need approval from all stakeholders.", exj: "すべての利害関係者からの承認が必要です。" },
+    { w: "milestone", ja: "節目・マイルストーン", ex: "We reached the first milestone ahead of schedule.", exj: "最初のマイルストーンを予定より早く達成しました。" },
+    { w: "draft", ja: "下書き（する）", ex: "Could you draft a reply for this client?", exj: "このクライアントへの返信の下書きをお願いできますか。" },
+    { w: "approve", ja: "承認する", ex: "The manager approved the budget yesterday.", exj: "昨日、マネージャーが予算を承認しました。" },
+    { w: "reschedule", ja: "予定を変更する", ex: "Can we reschedule the call to Thursday?", exj: "通話を木曜日に変更できますか。" },
+    { w: "quarterly", ja: "四半期の", ex: "The quarterly report is due next week.", exj: "四半期報告書は来週締切です。" },
+    { w: "overtime", ja: "残業", ex: "I had to work overtime to finish the report.", exj: "レポートを終わらせるために残業しなければなりませんでした。" },
+    { w: "resign", ja: "退職する", ex: "She decided to resign at the end of the year.", exj: "彼女は年末に退職することを決めました。" },
+    { w: "onsite", ja: "現地の・対面の", ex: "The meeting will be onsite this time.", exj: "今回の会議は現地開催です。" },
+    { w: "remote work", ja: "リモートワーク", ex: "Remote work is allowed twice a week.", exj: "リモートワークは週2回まで認められています。" },
+    { w: "headquarters", ja: "本社", ex: "The headquarters is located in New York.", exj: "本社はニューヨークにあります。" },
+    { w: "supervisor", ja: "上司・監督者", ex: "Please check with your supervisor first.", exj: "まず上司に確認してください。" },
+    { w: "performance review", ja: "人事評価", ex: "My performance review is scheduled for Friday.", exj: "私の人事評価は金曜日に予定されています。" },
+    { w: "compliance", ja: "コンプライアンス・法令遵守", ex: "All staff must complete the compliance training.", exj: "全社員がコンプライアンス研修を修了する必要があります。" },
+    { w: "revenue", ja: "収益", ex: "Revenue increased significantly this quarter.", exj: "今四半期は収益が大きく増加しました。" },
+    { w: "layoff", ja: "人員削減", ex: "The company announced layoffs last month.", exj: "会社は先月、人員削減を発表しました。" },
+    { w: "merger", ja: "合併", ex: "The merger was completed in March.", exj: "合併は3月に完了しました。" },
+    { w: "shareholder", ja: "株主", ex: "Shareholders will vote on the proposal next week.", exj: "株主は来週その提案について投票します。" },
+    { w: "logistics", ja: "物流", ex: "Logistics costs rose due to fuel prices.", exj: "燃料価格の上昇で物流コストが増加しました。" },
+    { w: "vendor", ja: "業者・仕入先", ex: "We are switching to a new vendor next month.", exj: "来月、新しい業者に切り替えます。" },
+    { w: "handover", ja: "引き継ぎ", ex: "Please prepare a handover document before you leave.", exj: "退職前に引き継ぎ資料を用意してください。" }
   ],
   study: [
     { w: "assignment", ja: "課題", ex: "The assignment is due next Monday.", exj: "その課題は来週月曜が締切です。" },
@@ -309,7 +358,31 @@ const vocabDecks = {
     { w: "revise", ja: "見直す・書き直す", ex: "I revised my essay twice before submitting.", exj: "提出する前にエッセイを2回書き直しました。" },
     { w: "cite", ja: "引用する", ex: "Remember to cite all your sources.", exj: "出典をすべて引用することを忘れないでください。" },
     { w: "research", ja: "研究・調査", ex: "Her research focuses on child language.", exj: "彼女の研究は子どもの言語に焦点を当てています。" },
-    { w: "definition", ja: "定義", ex: "Check the definition in the glossary.", exj: "用語集で定義を確認してください。" }
+    { w: "definition", ja: "定義", ex: "Check the definition in the glossary.", exj: "用語集で定義を確認してください。" },
+    { w: "syllabus", ja: "シラバス・講義要項", ex: "Check the syllabus for the reading list.", exj: "読書リストはシラバスで確認してください。" },
+    { w: "semester", ja: "学期", ex: "This semester has five courses.", exj: "今学期は5つの授業があります。" },
+    { w: "tuition", ja: "授業料", ex: "Tuition increased by 5% this year.", exj: "今年、授業料が5%上がりました。" },
+    { w: "scholarship", ja: "奨学金", ex: "She received a scholarship for graduate school.", exj: "彼女は大学院の奨学金を受けました。" },
+    { w: "thesis", ja: "論文（卒論・修論）", ex: "My thesis is about renewable energy.", exj: "私の論文は再生可能エネルギーについてです。" },
+    { w: "plagiarism", ja: "剽窃・盗用", ex: "Plagiarism can lead to a failing grade.", exj: "剽窃は単位の不合格につながることがあります。" },
+    { w: "peer review", ja: "ピアレビュー", ex: "The paper went through peer review.", exj: "その論文はピアレビューを受けました。" },
+    { w: "major", ja: "専攻", ex: "What is your major at university?", exj: "大学での専攻は何ですか。" },
+    { w: "elective", ja: "選択科目", ex: "I'm taking an elective in psychology.", exj: "心理学の選択科目を取っています。" },
+    { w: "GPA", ja: "成績平均値", ex: "You need a GPA of 3.0 to apply.", exj: "応募には3.0のGPAが必要です。" },
+    { w: "deadline extension", ja: "締切延長", ex: "Could I ask for a deadline extension?", exj: "締切の延長をお願いできますか。" },
+    { w: "office hours", ja: "オフィスアワー", ex: "The professor's office hours are on Tuesday.", exj: "教授のオフィスアワーは火曜日です。" },
+    { w: "midterm", ja: "中間試験", ex: "The midterm covers the first five chapters.", exj: "中間試験は最初の5章が範囲です。" },
+    { w: "final exam", ja: "期末試験", ex: "The final exam is in two weeks.", exj: "期末試験は2週間後です。" },
+    { w: "workshop", ja: "ワークショップ", ex: "The writing workshop was very helpful.", exj: "そのライティングワークショップはとても役立ちました。" },
+    { w: "hand in", ja: "提出する", ex: "Please hand in your essay by Monday.", exj: "月曜までにエッセイを提出してください。" },
+    { w: "literature review", ja: "先行研究のレビュー", ex: "The literature review took longer than expected.", exj: "先行研究のレビューは予想より時間がかかりました。" },
+    { w: "hypothesis", ja: "仮説", ex: "Our hypothesis was not supported by the data.", exj: "私たちの仮説はデータによって裏付けられませんでした。" },
+    { w: "data analysis", ja: "データ分析", ex: "Data analysis is the hardest part of my project.", exj: "データ分析は私のプロジェクトで最も難しい部分です。" },
+    { w: "reference list", ja: "参考文献リスト", ex: "Don't forget the reference list at the end.", exj: "最後に参考文献リストを忘れずに。" },
+    { w: "proofread", ja: "校正する", ex: "Could you proofread my draft tonight?", exj: "今夜、下書きを校正してもらえますか。" },
+    { w: "feedback", ja: "フィードバック", ex: "The teacher gave detailed feedback on my essay.", exj: "先生が私のエッセイに詳しいフィードバックをくれました。" },
+    { w: "credit", ja: "単位", ex: "You need 120 credits to graduate.", exj: "卒業には120単位が必要です。" },
+    { w: "study group", ja: "勉強会", ex: "We meet for a study group every Wednesday.", exj: "毎週水曜日に勉強会をしています。" }
   ],
   exam: [
     { w: "describe", ja: "描写する・説明する", ex: "Describe the picture in three sentences.", exj: "その写真を3文で描写しなさい。" },
@@ -327,7 +400,31 @@ const vocabDecks = {
     { w: "reason", ja: "理由", ex: "My main reason is saving time.", exj: "私の主な理由は時間の節約です。" },
     { w: "option", ja: "選択肢", ex: "Choose the best option from A to D.", exj: "AからDの中で最も適切な選択肢を選びなさい。" },
     { w: "graph", ja: "グラフ", ex: "The graph shows sales from 2010 to 2020.", exj: "このグラフは2010年から2020年の売上を示しています。" },
-    { w: "in contrast", ja: "対照的に", ex: "In contrast, costs stayed the same.", exj: "対照的に、コストは変わりませんでした。" }
+    { w: "in contrast", ja: "対照的に", ex: "In contrast, costs stayed the same.", exj: "対照的に、コストは変わりませんでした。" },
+    { w: "multiple choice", ja: "選択式（の）", ex: "This section is multiple choice.", exj: "このセクションは選択式です。" },
+    { w: "fill in the blank", ja: "空欄補充", ex: "Fill in the blank with the correct word.", exj: "空欄に正しい単語を入れなさい。" },
+    { w: "underline", ja: "下線を引く", ex: "Underline the main idea in each paragraph.", exj: "各段落の主旨に下線を引きなさい。" },
+    { w: "summarize", ja: "要約する", ex: "Summarize the passage in one sentence.", exj: "本文を1文で要約しなさい。" },
+    { w: "main idea", ja: "要旨", ex: "What is the main idea of this paragraph?", exj: "この段落の要旨は何ですか。" },
+    { w: "supporting detail", ja: "裏付けとなる詳細", ex: "Find a supporting detail for this claim.", exj: "この主張を裏付ける詳細を見つけなさい。" },
+    { w: "context clue", ja: "文脈手がかり", ex: "Use context clues to guess the meaning.", exj: "文脈の手がかりを使って意味を推測しなさい。" },
+    { w: "vocabulary", ja: "語彙", ex: "This test focuses on academic vocabulary.", exj: "このテストはアカデミックな語彙に焦点を当てています。" },
+    { w: "correct", ja: "正しい", ex: "Choose the correct answer from the choices.", exj: "選択肢の中から正しい答えを選びなさい。" },
+    { w: "incorrect", ja: "誤った", ex: "Mark the incorrect statement.", exj: "誤った記述に印をつけなさい。" },
+    { w: "score", ja: "得点", ex: "Your score will be shown after the test.", exj: "テストの後にあなたの得点が表示されます。" },
+    { w: "essay question", ja: "記述式問題", ex: "The last section has one essay question.", exj: "最後のセクションには記述式問題が1つあります。" },
+    { w: "time limit", ja: "制限時間", ex: "There is a 40-minute time limit for this section.", exj: "このセクションには40分の制限時間があります。" },
+    { w: "instructions", ja: "指示", ex: "Read the instructions carefully before you start.", exj: "始める前に指示をよく読んでください。" },
+    { w: "sample answer", ja: "解答例", ex: "Look at the sample answer for reference.", exj: "参考のために解答例を見てください。" },
+    { w: "criteria", ja: "評価基準", ex: "Your essay will be graded on three criteria.", exj: "あなたのエッセイは3つの基準で評価されます。" },
+    { w: "paraphrase", ja: "言い換える", ex: "Paraphrase the sentence without changing the meaning.", exj: "意味を変えずにその文を言い換えなさい。" },
+    { w: "trend", ja: "傾向", ex: "Describe the trend shown in the graph.", exj: "グラフに示された傾向を説明しなさい。" },
+    { w: "percentage", ja: "割合・パーセンテージ", ex: "What percentage of students passed the test?", exj: "何パーセントの生徒が試験に合格しましたか。" },
+    { w: "overall", ja: "全体的に", ex: "Overall, the results support the hypothesis.", exj: "全体的に、結果は仮説を裏付けています。" },
+    { w: "specific", ja: "具体的な", ex: "Give a specific example to support your answer.", exj: "答えを裏付ける具体的な例を挙げなさい。" },
+    { w: "false", ja: "誤りの・偽の", ex: "Decide if each statement is true or false.", exj: "それぞれの記述が正しいか誤りか判断しなさい。" },
+    { w: "valid point", ja: "妥当な指摘", ex: "That's a valid point, but there is a counterargument.", exj: "それは妥当な指摘ですが、反論もあります。" },
+    { w: "counterargument", ja: "反論", ex: "A strong essay includes a counterargument.", exj: "優れたエッセイには反論が含まれます。" }
   ],
   daily: [
     { w: "hang out", ja: "遊ぶ・つるむ", ex: "Do you want to hang out this weekend?", exj: "今週末、遊ばない？" },
@@ -345,7 +442,31 @@ const vocabDecks = {
     { w: "on me", ja: "私のおごりで", ex: "Dinner is on me tonight.", exj: "今夜の夕食は私のおごりね。" },
     { w: "make it", ja: "都合がつく・間に合う", ex: "Sorry, I can't make it on Friday.", exj: "ごめん、金曜は都合がつかないんだ。" },
     { w: "how about", ja: "〜はどう？", ex: "How about next Tuesday instead?", exj: "代わりに来週の火曜はどう？" },
-    { w: "no worries", ja: "気にしないで", ex: "No worries, we can meet another day.", exj: "気にしないで、別の日に会えるよ。" }
+    { w: "no worries", ja: "気にしないで", ex: "No worries, we can meet another day.", exj: "気にしないで、別の日に会えるよ。" },
+    { w: "run errands", ja: "用事を済ませる", ex: "I need to run some errands this afternoon.", exj: "今日の午後、いくつか用事を済ませないと。" },
+    { w: "chill", ja: "まったりする", ex: "Let's just chill at home tonight.", exj: "今夜は家でまったりしよう。" },
+    { w: "text", ja: "メッセージを送る", ex: "I'll text you when I arrive.", exj: "着いたらメッセージを送るね。" },
+    { w: "show up", ja: "現れる・来る", ex: "He showed up ten minutes late.", exj: "彼は10分遅れて現れた。" },
+    { w: "figure out", ja: "解決する・理解する", ex: "Let me figure out the best way to get there.", exj: "そこへの一番いい行き方を考えてみるよ。" },
+    { w: "get along", ja: "仲良くやる", ex: "We get along really well.", exj: "私たちはとても仲がいいです。" },
+    { w: "drop by", ja: "ちょっと立ち寄る", ex: "Feel free to drop by anytime.", exj: "いつでも気軽に立ち寄ってね。" },
+    { w: "take a break", ja: "休憩する", ex: "Let's take a break for ten minutes.", exj: "10分休憩しよう。" },
+    { w: "give it a try", ja: "やってみる", ex: "I've never tried sushi, but I'll give it a try.", exj: "寿司は食べたことないけど、やってみるよ。" },
+    { w: "run late", ja: "遅れる", ex: "Sorry, I'm running a bit late.", exj: "ごめん、ちょっと遅れそう。" },
+    { w: "head out", ja: "出発する", ex: "We should head out soon to beat traffic.", exj: "渋滞を避けるためにそろそろ出発しよう。" },
+    { w: "get together", ja: "集まる", ex: "Let's get together sometime next week.", exj: "来週のどこかで集まろうよ。" },
+    { w: "by the way", ja: "ところで", ex: "By the way, did you finish that book?", exj: "ところで、あの本読み終わった？" },
+    { w: "no big deal", ja: "大したことない", ex: "Don't worry, it's no big deal.", exj: "心配しないで、大したことじゃないよ。" },
+    { w: "for sure", ja: "もちろん", ex: "Are you coming tonight? For sure!", exj: "今夜来る？もちろん！" },
+    { w: "I'm down", ja: "賛成・乗り気", ex: "Pizza tonight? I'm down.", exj: "今夜ピザ？賛成！" },
+    { w: "hang on", ja: "ちょっと待って", ex: "Hang on, let me check my calendar.", exj: "ちょっと待って、カレンダーを確認するね。" },
+    { w: "never mind", ja: "気にしないで・なんでもない", ex: "Never mind, I found it already.", exj: "気にしないで、もう見つけたから。" },
+    { w: "what's up", ja: "元気？・どうしたの", ex: "Hey, what's up? Long time no see.", exj: "やあ、元気？久しぶりだね。" },
+    { w: "take it easy", ja: "気楽にやる", ex: "Take it easy this weekend, you deserve it.", exj: "今週末は気楽に過ごして、頑張ったからね。" },
+    { w: "keep in touch", ja: "連絡を取り合う", ex: "Let's keep in touch after you move.", exj: "引っ越した後も連絡を取り合おうね。" },
+    { w: "on the way", ja: "向かっている途中", ex: "I'm on the way, be there in five minutes.", exj: "今向かってるところ、5分で着くよ。" },
+    { w: "plans", ja: "予定", ex: "Do you have any plans this weekend?", exj: "今週末、何か予定ある？" },
+    { w: "count me in", ja: "参加する（乗り気で）", ex: "A movie night? Count me in!", exj: "映画の夜？参加するよ！" }
   ]
 };
 
@@ -838,12 +959,13 @@ function setSkill(skill) {
   usedMic = false;
   const task = todaysTask(skill);
   const isListening = skill === "listening";
+  const isReading = skill === "reading";
 
   $("#skillMode").textContent = skill[0].toUpperCase() + skill.slice(1);
   $("#skillTitle").textContent = task.t;
   $("#skillPrompt").textContent = isListening
     ? "▶ を押して音声を聞き、聞こえた英文をそのまま書き取ってください。（再生は何度でもOK、まずは2回で挑戦）"
-    : task.p;
+    : isReading ? task.q : task.p;
 
   const passage = $("#skillPassage");
   passage.hidden = !task.x;
@@ -858,6 +980,10 @@ function setSkill(skill) {
   $("#listenTools").hidden = !isListening;
   $("#listenCount").textContent = "";
 
+  $("#answerTools").hidden = isReading;
+  $("#readingChoices").hidden = !isReading;
+  if (isReading) renderReadingChoices(task);
+
   $("#skillAnswer").value = "";
   $("#skillAnswer").placeholder = skill === "speaking"
     ? "🎙で話すか、話す内容をタイプしてください"
@@ -867,8 +993,50 @@ function setSkill(skill) {
   $("#micStatus").textContent = "";
   $("#feedbackText").textContent = unitDone(skill)
     ? "今日のこの課題はクリア済み。もう一度挑戦しても、明日新しい課題でもOKです。"
+    : isReading
+    ? "本文を読んで、正しい選択肢を選んでください。"
     : "回答を書いたらチェックできます。キーフレーズ・具体性・自然さを見ます。";
   $$(".tab").forEach((tab) => tab.classList.toggle("is-active", tab.dataset.skill === skill));
+}
+
+function renderReadingChoices(task) {
+  $("#readingChoices").innerHTML = task.choices.map((choice, index) =>
+    `<button class="choice-button" type="button" data-index="${index}">${escapeHtml(choice)}</button>`
+  ).join("");
+}
+
+function checkReadingChoice(index, buttonEl) {
+  const task = todaysTask("reading");
+  const correct = index === task.correct;
+
+  if (!correct) {
+    buttonEl.disabled = true;
+    buttonEl.classList.add("is-wrong");
+    $("#feedbackText").textContent = "不正解です。本文を読み直して、他の選択肢を試してみましょう。";
+    return;
+  }
+
+  $$("#readingChoices .choice-button").forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === task.correct) btn.classList.add("is-correct");
+  });
+
+  showStars(3);
+  $("#feedbackText").textContent = "正解です！本文の内容を正しく読み取れています。";
+  if (task.x) revealPassageJa(true);
+
+  const xp = 25;
+  const counted = recordUnit("reading", xp);
+  if (counted) {
+    toast(`+${xp} XP（Reading）`);
+    awardBadge("first-task");
+    state.history.push({ d: todayKey, skill: "reading", task: task.t, answer: task.choices[index], stars: 3 });
+    if (state.history.length > 200) state.history = state.history.slice(-200);
+    saveState();
+    renderHistory();
+  } else {
+    $("#feedbackText").textContent += " （今日のXPは獲得済み。練習モードです）";
+  }
 }
 
 function normalizeWords(text) {
@@ -1048,6 +1216,15 @@ function vocabId(goal, word) {
   return `${goal}:${word.w}`;
 }
 
+function shuffle(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function buildVocabSession() {
   const goal = state.goal || "travel";
   const deck = vocabDecks[goal];
@@ -1057,16 +1234,36 @@ function buildVocabSession() {
     const id = vocabId(goal, word);
     const entry = state.vocab[id];
     if (!entry) fresh.push({ id, word, isNew: true });
-    else if (entry.due <= todayKey) due.push({ id, word, isNew: false });
+    else if (entry.due <= todayKey) due.push({ id, word, isNew: false, due: entry.due });
   });
+  // 復習は「期限切れが長い順」に並べる（デッキ順で固定の単語ばかり出る偏りを防ぐ）
+  due.sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : 0));
+
   // その日のノルマ達成後は、新出カードを追加せず期限が来た復習だけを出す
-  const queue = unitDone("vocab") ? due.slice(0, VOCAB_DAILY) : [...due, ...fresh].slice(0, VOCAB_DAILY);
-  return { queue, index: 0, correct: 0 };
+  if (unitDone("vocab")) {
+    return { queue: due.slice(0, VOCAB_DAILY), index: 0, correct: 0 };
+  }
+
+  // 復習が溜まっていても新出単語の枠を確保し、いつまでも新しい単語が出ない状態を防ぐ
+  const newSlot = Math.min(VOCAB_NEW_PER_DAY, fresh.length, VOCAB_DAILY);
+  const reviewSlot = VOCAB_DAILY - newSlot;
+  const queue = [...due.slice(0, reviewSlot), ...shuffle(fresh).slice(0, newSlot)];
+  if (queue.length < VOCAB_DAILY) {
+    queue.push(...due.slice(reviewSlot, reviewSlot + (VOCAB_DAILY - queue.length)));
+  }
+  return { queue: shuffle(queue), index: 0, correct: 0 };
 }
 
 function currentVocabCard() {
   if (!vocabSession) vocabSession = buildVocabSession();
   return vocabSession.queue[vocabSession.index] || null;
+}
+
+function generateVocabChoices(goal, word) {
+  const deck = vocabDecks[goal] || [];
+  const distractorPool = deck.filter((w) => w.ja !== word.ja);
+  const distractors = shuffle(distractorPool).slice(0, 2).map((w) => w.ja);
+  return shuffle([word.ja, ...distractors]);
 }
 
 function renderVocab() {
@@ -1088,9 +1285,8 @@ function renderVocab() {
       : "明日になると復習カードが届きます。忘れた頃が覚えどきです。";
     $("#vocabAnswer").hidden = true;
     $("#vocabExampleJa").hidden = true;
-    $("#vocabRevealButton").hidden = true;
-    $("#vocabKnownButton").hidden = true;
-    $("#vocabAgainButton").hidden = true;
+    $("#vocabChoices").innerHTML = "";
+    $("#vocabNextButton").hidden = true;
     $("#vocabSpeakButton").hidden = true;
     return;
   }
@@ -1099,26 +1295,36 @@ function renderVocab() {
   $("#vocabKind").textContent = card.isNew ? "新しい単語" : "復習";
   $("#vocabWord").textContent = card.word.w;
   $("#vocabExample").textContent = card.word.ex;
-  // 例文の訳は答えのヒントになるので、意味と同時に開く
   $("#vocabExampleJa").textContent = card.word.exj || "";
   $("#vocabExampleJa").hidden = true;
   $("#vocabAnswer").hidden = true;
   $("#vocabAnswer").textContent = "";
-  $("#vocabRevealButton").hidden = false;
-  $("#vocabKnownButton").hidden = true;
-  $("#vocabAgainButton").hidden = true;
+  $("#vocabNextButton").hidden = true;
   $("#vocabSpeakButton").hidden = false;
+
+  const options = generateVocabChoices(state.goal || "travel", card.word);
+  $("#vocabChoices").innerHTML = options.map((option) =>
+    `<button class="choice-button" type="button" data-value="${escapeHtml(option)}">${escapeHtml(option)}</button>`
+  ).join("");
 }
 
-function revealVocab() {
+function chooseVocabAnswer(chosenJa, buttonEl) {
   const card = currentVocabCard();
   if (!card) return;
-  $("#vocabAnswer").textContent = `意味: ${card.word.ja}`;
+  const correct = chosenJa === card.word.ja;
+
+  $$("#vocabChoices .choice-button").forEach((btn) => {
+    btn.disabled = true;
+    if (btn.dataset.value === card.word.ja) btn.classList.add("is-correct");
+    else if (btn === buttonEl) btn.classList.add("is-wrong");
+  });
+
+  $("#vocabAnswer").textContent = correct ? `正解: ${card.word.ja}` : `不正解。正解は「${card.word.ja}」`;
   $("#vocabAnswer").hidden = false;
   $("#vocabExampleJa").hidden = !card.word.exj;
-  $("#vocabRevealButton").hidden = true;
-  $("#vocabKnownButton").hidden = false;
-  $("#vocabAgainButton").hidden = false;
+  $("#vocabNextButton").hidden = false;
+
+  gradeVocab(correct);
 }
 
 function gradeVocab(known) {
@@ -1131,9 +1337,11 @@ function gradeVocab(known) {
   entry.due = shiftKey(todayKey, SRS_INTERVALS[entry.box]);
   state.vocab[card.id] = entry;
   if (known) vocabSession.correct += 1;
-
-  vocabSession.index += 1;
   saveState();
+}
+
+function advanceVocab() {
+  vocabSession.index += 1;
 
   if (vocabSession.index >= vocabSession.queue.length) {
     const counted = recordUnit("vocab", 20);
@@ -1261,7 +1469,10 @@ function renderPlan() {
   $("#dailyPlan").innerHTML = UNITS.map((unit) => {
     const done = unitDone(unit);
     const title = unit === "vocab" ? "今日の単語 10枚" : todaysTask(unit).t;
-    const desc = unit === "vocab" ? "SRSで新出と復習をミックス。" : (unit === "listening" ? "音声を聞いて書き取るディクテーション。" : todaysTask(unit).p);
+    const desc = unit === "vocab" ? "SRSで新出と復習をミックス。"
+      : unit === "listening" ? "音声を聞いて書き取るディクテーション。"
+      : unit === "reading" ? "本文を読んで、3択の問題に答えよう。"
+      : todaysTask(unit).p;
     return `
       <button type="button" class="daily-task ${done ? "is-done" : ""}" data-unit="${unit}">
         <span class="tag">${names[unit]} ${minutes[unit]}分</span>
@@ -1471,10 +1682,18 @@ $("#playSlowButton").addEventListener("click", () => playListening(0.68));
 $("#modelSpeakButton").addEventListener("click", () => {
   if (modelRevealed) speak($("#modelAnswerText").textContent);
 });
+$("#readingChoices").addEventListener("click", (event) => {
+  const btn = event.target.closest(".choice-button");
+  if (!btn || btn.disabled) return;
+  checkReadingChoice(Number(btn.dataset.index), btn);
+});
 
-$("#vocabRevealButton").addEventListener("click", revealVocab);
-$("#vocabKnownButton").addEventListener("click", () => gradeVocab(true));
-$("#vocabAgainButton").addEventListener("click", () => gradeVocab(false));
+$("#vocabChoices").addEventListener("click", (event) => {
+  const btn = event.target.closest(".choice-button");
+  if (!btn || btn.disabled) return;
+  chooseVocabAnswer(btn.dataset.value, btn);
+});
+$("#vocabNextButton").addEventListener("click", advanceVocab);
 $("#vocabSpeakButton").addEventListener("click", () => {
   const card = currentVocabCard();
   if (card) speak(`${card.word.w}. ${card.word.ex}`);
