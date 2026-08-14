@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=11" />
   </head>
   <body>
     <div class="app-shell">
@@ -216,6 +216,10 @@
                 <span class="listen-note" id="listenCount"></span>
               </div>
               <div class="choice-row" id="readingChoices" hidden></div>
+              <div class="tool-row" id="hintTools" hidden>
+                <button class="ghost-button small" id="hintButton" type="button">💡 使えるフレーズを見る</button>
+              </div>
+              <p class="hint-text" id="hintText" hidden></p>
               <div class="answer-tools" id="answerTools">
                 <textarea id="skillAnswer" rows="5" placeholder="Type your answer or speaking script..."></textarea>
                 <div class="tool-row">
@@ -335,6 +339,6 @@
     </div>
 
     <script type="module" src="cloud.js?v=2"></script>
-    <script defer src="app.js?v=8"></script>
+    <script defer src="app.js?v=9"></script>
   </body>
 </html>

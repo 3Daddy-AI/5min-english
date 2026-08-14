@@ -933,6 +933,17 @@ button.daily-task:nth-child(even) {
   font-weight: 500;
 }
 
+.hint-text {
+  margin: 10px 0 0;
+  padding: 12px 16px;
+  border: 2.5px dashed var(--blue);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.8;
+  font-weight: 600;
+}
+
 .model-answer-ja {
   margin: 0 0 10px;
   padding-top: 10px;

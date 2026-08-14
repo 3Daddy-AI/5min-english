@@ -984,6 +984,12 @@ function setSkill(skill) {
   $("#readingChoices").hidden = !isReading;
   if (isReading) renderReadingChoices(task);
 
+  const canHint = !isReading && !isListening && Array.isArray(task.k) && task.k.length > 0;
+  $("#hintTools").hidden = !canHint;
+  $("#hintText").hidden = true;
+  $("#hintText").textContent = canHint ? `使えそうな表現: ${task.k.join(" / ")}` : "";
+  $("#hintButton").textContent = "💡 使えるフレーズを見る";
+
   $("#skillAnswer").value = "";
   $("#skillAnswer").placeholder = skill === "speaking"
     ? "🎙で話すか、話す内容をタイプしてください"
@@ -1108,12 +1114,15 @@ function checkAnswer() {
     const hasPolite = /\b(could|would|please|thank|appreciate)\b/i.test(answer);
     const advice = [];
 
-    stars = ratio >= 0.99 ? 3 : ratio >= 0.5 ? 2 : ratio > 0 || wordCount >= 6 ? 1 : 0;
-    if (tier() === "basic" && wordCount < 6) {
+    const isBasicTier = tier() === "basic";
+    // basic（A1/A2）はキーフレーズを1つでも使えれば加点し、短い回答で満点を取りにくくする減点は行わない
+    stars = isBasicTier
+      ? (ratio >= 0.66 ? 3 : ratio >= 0.34 ? 2 : ratio > 0 || wordCount >= 4 ? 1 : 0)
+      : (ratio >= 0.99 ? 3 : ratio >= 0.5 ? 2 : ratio > 0 || wordCount >= 6 ? 1 : 0);
+    if (isBasicTier && wordCount < 4) {
       advice.push("もう1つ情報を足すと、実際の場面で伝わりやすくなります。");
-      stars = Math.min(stars, 1);
     }
-    if (tier() === "plus" && wordCount < 15) {
+    if (!isBasicTier && wordCount < 15) {
       advice.push("B1以上を目指すなら、理由や補足をもう1文足してみましょう。");
       stars = Math.min(stars, 2);
     }
@@ -1756,6 +1765,11 @@ $$(".tab").forEach((tab) => tab.addEventListener("click", () => setSkill(tab.dat
 $("#checkAnswerButton").addEventListener("click", checkAnswer);
 $("#speakButton").addEventListener("click", startRecognition);
 $("#passageJaButton").addEventListener("click", () => revealPassageJa($("#passageJa").hidden));
+$("#hintButton").addEventListener("click", () => {
+  const hint = $("#hintText");
+  hint.hidden = !hint.hidden;
+  $("#hintButton").textContent = hint.hidden ? "💡 使えるフレーズを見る" : "💡 フレーズを隠す";
+});
 $("#playAudioButton").addEventListener("click", () => playListening(0.95));
 $("#playSlowButton").addEventListener("click", () => playListening(0.68));
 $("#modelSpeakButton").addEventListener("click", () => {
