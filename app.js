@@ -6,8 +6,8 @@ const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
 const SKILLS = ["speaking", "writing", "reading", "listening"];
 const UNITS = ["vocab", ...SKILLS];
 const DIAG_ANSWERS = { vocab: "b", grammar: "b" };
-const VOCAB_DAILY = 10;
-const VOCAB_NEW_PER_DAY = 4; // 復習が溜まっていても、新出単語は最低これだけ毎日出す
+const VOCAB_DAILY = 15;
+const VOCAB_NEW_PER_DAY = 6; // 復習が溜まっていても、新出単語は最低これだけ毎日出す
 const SRS_INTERVALS = [0, 1, 2, 4, 7, 15]; // box(1-5) -> 次回までの日数
 
 const goalMeta = {
@@ -1003,6 +1003,7 @@ function setSkill(skill) {
     ? "本文を読んで、正しい選択肢を選んでください。"
     : "回答を書いたらチェックできます。キーフレーズ・具体性・自然さを見ます。";
   $$(".tab").forEach((tab) => tab.classList.toggle("is-active", tab.dataset.skill === skill));
+  renderVocabBonus();
 }
 
 function renderReadingChoices(task) {
@@ -1253,9 +1254,10 @@ function buildVocabSession() {
     return { queue: due.slice(0, VOCAB_DAILY), index: 0, correct: 0 };
   }
 
-  // 復習が溜まっていても新出単語の枠を確保し、いつまでも新しい単語が出ない状態を防ぐ
-  const newSlot = Math.min(VOCAB_NEW_PER_DAY, fresh.length, VOCAB_DAILY);
-  const reviewSlot = VOCAB_DAILY - newSlot;
+  // 復習には「新出の最低枠（VOCAB_NEW_PER_DAY）」を除いた分だけ割り当てる。
+  // 復習が少ない日は、余った枠を新出単語で埋めて1日の合計をきちんとVOCAB_DAILYまで使う。
+  const reviewSlot = Math.min(due.length, Math.max(0, VOCAB_DAILY - VOCAB_NEW_PER_DAY));
+  const newSlot = Math.min(VOCAB_DAILY - reviewSlot, fresh.length);
   const queue = [...due.slice(0, reviewSlot), ...shuffle(fresh).slice(0, newSlot)];
   if (queue.length < VOCAB_DAILY) {
     queue.push(...due.slice(reviewSlot, reviewSlot + (VOCAB_DAILY - queue.length)));
@@ -1284,6 +1286,8 @@ function renderVocab() {
   $("#vocabStats").textContent = state.goal
     ? `これまでに ${state.wordsSeen} 語に出会い、${learned} 語が定着ゾーン（Box3以上）。明日の復習は ${dueTomorrow} 語です。`
     : "診断すると、目的に合った単語デッキが始まります。";
+
+  renderVocabList();
 
   if (!card) {
     $("#vocabProgress").textContent = `${total} / ${total}`;
@@ -1360,6 +1364,110 @@ function advanceVocab() {
   }
   renderVocab();
   renderProgress();
+}
+
+function renderVocabList() {
+  const button = $("#vocabListButton");
+  const list = $("#vocabList");
+  const words = todaysWords();
+
+  if (words.length === 0) {
+    button.hidden = true;
+    list.hidden = true;
+    list.innerHTML = "";
+    return;
+  }
+
+  button.hidden = false;
+  list.innerHTML = words.map(({ word, isNew }) =>
+    `<li><span>${escapeHtml(word.w)} <span class="tag tag-soft">${isNew ? "新出" : "復習"}</span></span><span class="vocab-list-ja">${escapeHtml(word.ja)}</span></li>`
+  ).join("");
+}
+
+/* ---------- 今日の単語を使ったボーナス課題（4技能） ---------- */
+
+function todaysWords() {
+  if (!state.goal) return [];
+  if (!vocabSession) vocabSession = buildVocabSession();
+  return vocabSession.queue;
+}
+
+// 日替わりで安定した単語を選ぶ（毎回ランダムだと画面を開くたびに変わってしまうため）
+function pickBonusWords(count) {
+  const words = todaysWords().map((c) => c.word);
+  if (words.length === 0) return [];
+  const start = dayNumber(todayKey) % words.length;
+  const picked = [];
+  for (let i = 0; i < count && i < words.length; i++) {
+    picked.push(words[(start + i) % words.length]);
+  }
+  return picked;
+}
+
+function renderVocabBonus() {
+  const box = $("#vocabBonus");
+  const words = todaysWords();
+
+  $("#bonusPlayRow").hidden = true;
+  $("#bonusAnswer").hidden = true;
+  $("#bonusChoices").hidden = true;
+  $("#bonusChoices").innerHTML = "";
+  delete $("#bonusChoices").dataset.correct;
+  $("#bonusRevealRow").hidden = true;
+  $("#bonusRevealButton").textContent = "例文を見る";
+  $("#bonusExample").hidden = true;
+  $("#bonusExample").textContent = "";
+  delete $("#bonusExample").dataset.example;
+  delete $("#bonusExample").dataset.exampleJa;
+
+  if (words.length === 0 || activeSkill === "reading" && words.length < 2) {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+
+  if (activeSkill === "reading") {
+    const picks = pickBonusWords(3);
+    const [primary, ...rest] = picks;
+    const distractors = rest.map((w) => w.exj).filter(Boolean);
+    $("#bonusPrompt").textContent = `今日の単語の例文です。意味として正しいものは？\n"${primary.ex}"`;
+    const choices = shuffle([primary.exj, ...distractors].slice(0, Math.min(3, 1 + distractors.length)));
+    $("#bonusChoices").hidden = false;
+    $("#bonusChoices").dataset.correct = primary.exj;
+    $("#bonusChoices").innerHTML = choices.map((c) =>
+      `<button class="choice-button" type="button" data-value="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+    ).join("");
+    return;
+  }
+
+  const word = pickBonusWords(1)[0];
+  if (!word) {
+    box.hidden = true;
+    return;
+  }
+
+  if (activeSkill === "speaking") {
+    $("#bonusPrompt").textContent = `今日の単語「${word.w}」（${word.ja}）を使って、一言声に出してみましょう。`;
+  } else if (activeSkill === "writing") {
+    $("#bonusPrompt").textContent = `今日の単語「${word.w}」（${word.ja}）を使って、一文書いてみましょう。`;
+    $("#bonusAnswer").hidden = false;
+    $("#bonusAnswer").value = "";
+  } else if (activeSkill === "listening") {
+    $("#bonusPrompt").textContent = "今日の単語を使った一文です。▶を押して聞き取ってみましょう。";
+    $("#bonusPlayRow").hidden = false;
+  }
+  $("#bonusRevealRow").hidden = false;
+  $("#bonusExample").dataset.example = word.ex;
+  $("#bonusExample").dataset.exampleJa = word.exj || "";
+}
+
+function checkBonusChoice(chosenJa, buttonEl) {
+  const correct = $("#bonusChoices").dataset.correct;
+  $$("#bonusChoices .choice-button").forEach((btn) => {
+    btn.disabled = true;
+    if (btn.dataset.value === correct) btn.classList.add("is-correct");
+    else if (btn === buttonEl) btn.classList.add("is-wrong");
+  });
 }
 
 /* ---------- 描画 ---------- */
@@ -1477,7 +1585,7 @@ function renderPlan() {
 
   $("#dailyPlan").innerHTML = UNITS.map((unit) => {
     const done = unitDone(unit);
-    const title = unit === "vocab" ? "今日の単語 10枚" : todaysTask(unit).t;
+    const title = unit === "vocab" ? `今日の単語 ${VOCAB_DAILY}枚` : todaysTask(unit).t;
     const desc = unit === "vocab" ? "SRSで新出と復習をミックス。"
       : unit === "listening" ? "音声を聞いて書き取るディクテーション。"
       : unit === "reading" ? "本文を読んで、3択の問題に答えよう。"
@@ -1560,7 +1668,7 @@ function updateCalendarLink() {
   const url = new URL("https://calendar.google.com/calendar/render");
   url.searchParams.set("action", "TEMPLATE");
   url.searchParams.set("text", "英語学習 (5分英語)");
-  url.searchParams.set("details", "今日の単語10枚と4技能課題");
+  url.searchParams.set("details", `今日の単語${VOCAB_DAILY}枚と4技能課題`);
   url.searchParams.set("dates", `${start}/${end}`);
   url.searchParams.set("recur", "RRULE:FREQ=DAILY");
   $("#calendarLink").href = url.toString();
@@ -1790,6 +1898,36 @@ $("#vocabNextButton").addEventListener("click", advanceVocab);
 $("#vocabSpeakButton").addEventListener("click", () => {
   const card = currentVocabCard();
   if (card) speak(`${card.word.w}. ${card.word.ex}`);
+});
+
+$("#vocabListButton").addEventListener("click", () => {
+  const list = $("#vocabList");
+  list.hidden = !list.hidden;
+  $("#vocabListButton").textContent = list.hidden ? "📋 今日の単語一覧を見る" : "📋 一覧を隠す";
+});
+
+$("#bonusRevealButton").addEventListener("click", () => {
+  const example = $("#bonusExample");
+  const revealed = !example.hidden;
+  if (revealed) {
+    example.hidden = true;
+    $("#bonusRevealButton").textContent = "例文を見る";
+  } else {
+    example.textContent = example.dataset.exampleJa
+      ? `${example.dataset.example}\n${example.dataset.exampleJa}`
+      : example.dataset.example || "";
+    example.hidden = false;
+    $("#bonusRevealButton").textContent = "隠す";
+  }
+});
+$("#bonusPlayButton").addEventListener("click", () => {
+  const text = $("#bonusExample").dataset.example;
+  if (text) speak(text);
+});
+$("#bonusChoices").addEventListener("click", (event) => {
+  const btn = event.target.closest(".choice-button");
+  if (!btn || btn.disabled) return;
+  checkBonusChoice(btn.dataset.value, btn);
 });
 
 $("#weeklyGoalSelect").addEventListener("change", (event) => {

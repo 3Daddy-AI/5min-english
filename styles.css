@@ -557,13 +557,58 @@ h3 {
 .choice-block,
 .quiz-card,
 .feedback-box,
-.habit-card {
+.habit-card,
+.vocab-bonus {
   min-width: 0;
   padding: 18px;
   border: 3px solid var(--line);
   border-radius: 14px;
   background: #fff;
   box-shadow: var(--shadow-sm);
+}
+
+.vocab-bonus {
+  margin-top: 16px;
+  background:
+    radial-gradient(circle at 3px 3px, rgba(255, 199, 44, 0.16) 2.4px, transparent 2.4px);
+  background-size: 16px 16px;
+}
+
+.vocab-bonus textarea {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 2.5px solid var(--line);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.vocab-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vocab-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 600;
+}
+
+.vocab-list .vocab-list-ja {
+  color: var(--muted);
+  font-weight: 500;
+  text-align: right;
 }
 
 fieldset {

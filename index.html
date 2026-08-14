@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=12" />
   </head>
   <body>
     <div class="app-shell">
@@ -164,12 +164,12 @@
           <div class="section-heading compact">
             <p class="eyebrow">Word lab</p>
             <h2 id="vocab-title">今日の単語</h2>
-            <p>目的に合わせた単語を1日10枚。忘れた頃にまた出てくる復習方式（SRS）です。</p>
+            <p>目的に合わせた単語を1日15枚。忘れた頃にまた出てくる復習方式（SRS）です。</p>
           </div>
           <div class="vocab-stage">
             <div class="vocab-card" id="vocabCard">
               <div class="vocab-meta">
-                <span class="tag" id="vocabProgress">0 / 10</span>
+                <span class="tag" id="vocabProgress">0 / 15</span>
                 <span class="tag tag-soft" id="vocabKind">新しい単語</span>
               </div>
               <strong id="vocabWord">—</strong>
@@ -185,6 +185,8 @@
             <aside class="feedback-box vocab-side">
               <span>Word stats</span>
               <p id="vocabStats">診断すると、目的に合った単語デッキが始まります。</p>
+              <button class="ghost-button small" id="vocabListButton" type="button" hidden>📋 今日の単語一覧を見る</button>
+              <ul class="vocab-list" id="vocabList" hidden></ul>
             </aside>
           </div>
         </section>
@@ -240,6 +242,22 @@
                 <button class="ghost-button small" id="modelSpeakButton" type="button">🔊 読み上げ</button>
               </div>
             </aside>
+          </div>
+          <div class="vocab-bonus" id="vocabBonus" hidden>
+            <div class="section-heading compact">
+              <p class="eyebrow">Bonus round</p>
+              <h3>🔤 今日の単語を使ってみよう</h3>
+            </div>
+            <p id="bonusPrompt">—</p>
+            <div class="tool-row" id="bonusPlayRow" hidden>
+              <button class="ghost-button" id="bonusPlayButton" type="button">▶ 音声を再生</button>
+            </div>
+            <textarea id="bonusAnswer" rows="2" placeholder="ここに書いてみましょう（任意）" hidden></textarea>
+            <div class="choice-row" id="bonusChoices" hidden></div>
+            <div class="tool-row" id="bonusRevealRow" hidden>
+              <button class="ghost-button small" id="bonusRevealButton" type="button">例文を見る</button>
+            </div>
+            <p class="hint-text" id="bonusExample" hidden></p>
           </div>
         </section>
 
@@ -339,6 +357,6 @@
     </div>
 
     <script type="module" src="cloud.js?v=2"></script>
-    <script defer src="app.js?v=9"></script>
+    <script defer src="app.js?v=10"></script>
   </body>
 </html>
