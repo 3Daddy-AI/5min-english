@@ -978,6 +978,78 @@ button.daily-task:nth-child(even) {
   font-weight: 500;
 }
 
+/* ---------- 単語タップ辞書 ---------- */
+
+.tap-word {
+  padding: 0 1px;
+  border: 0;
+  border-bottom: 2px dotted rgba(40, 167, 233, 0.5);
+  border-radius: 3px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tap-word:hover {
+  background: rgba(255, 199, 44, 0.45);
+  border-bottom-color: var(--line);
+}
+
+.tap-word.is-active {
+  background: var(--yellow);
+  border-bottom-color: var(--line);
+}
+
+.word-popup {
+  position: absolute;
+  z-index: 60;
+  display: grid;
+  gap: 8px;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 14px 16px;
+  border: 3px solid var(--line);
+  border-radius: 12px;
+  background: #fffdf5;
+  box-shadow: var(--shadow-sm);
+}
+
+.word-popup > strong {
+  padding-right: 24px;
+  font-family: var(--font-comic);
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+}
+
+.word-popup > p {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.word-popup > p.is-missing {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.word-popup-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 2px 6px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.bonus-example-ja {
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .hint-text {
   margin: 10px 0 0;
   padding: 12px 16px;

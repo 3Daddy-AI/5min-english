@@ -969,7 +969,7 @@ function setSkill(skill) {
 
   const passage = $("#skillPassage");
   passage.hidden = !task.x;
-  passage.textContent = task.x || "";
+  renderTappable(passage, task.x || "");
 
   // 読解パッセージの訳は「まず英語で読む」ため初期状態では隠し、ボタンで開く
   $("#passageTools").hidden = !task.x;
@@ -1080,7 +1080,7 @@ function showModelAnswer(text, label) {
   modelRevealed = true;
   $("#modelAnswerBox").hidden = false;
   $("#modelAnswerLabel").textContent = label || "Model answer";
-  $("#modelAnswerText").textContent = text;
+  renderTappable($("#modelAnswerText"), text);
   const ja = translations[text];
   $("#modelAnswerJa").textContent = ja || "";
   $("#modelAnswerJa").hidden = !ja;
@@ -1307,7 +1307,7 @@ function renderVocab() {
   $("#vocabProgress").textContent = `${vocabSession.index + 1} / ${total}`;
   $("#vocabKind").textContent = card.isNew ? "新しい単語" : "復習";
   $("#vocabWord").textContent = card.word.w;
-  $("#vocabExample").textContent = card.word.ex;
+  renderTappable($("#vocabExample"), card.word.ex);
   $("#vocabExampleJa").textContent = card.word.exj || "";
   $("#vocabExampleJa").hidden = true;
   $("#vocabAnswer").hidden = true;
@@ -1628,6 +1628,97 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 }
 
+/* ---------- 単語タップ辞書 ---------- */
+
+// 単語デッキ（目的別）を横断した語→意味の索引。デッキ側を優先して引く。
+let deckGlossCache = null;
+function deckGloss() {
+  if (deckGlossCache) return deckGlossCache;
+  deckGlossCache = new Map();
+  Object.values(vocabDecks).forEach((deck) => {
+    deck.forEach((word) => {
+      const key = word.w.toLowerCase();
+      if (!deckGlossCache.has(key)) deckGlossCache.set(key, word.ja);
+    });
+  });
+  return deckGlossCache;
+}
+
+// 活用形・所有格から原形の候補を作る（辞書は原形だけを持てば済むようにする）
+function wordCandidates(word) {
+  const c = [word];
+  if (word.endsWith("'s") || word.endsWith("’s")) c.push(word.slice(0, -2));
+  if (word.endsWith("ies")) c.push(word.slice(0, -3) + "y");
+  if (word.endsWith("es")) c.push(word.slice(0, -2));
+  if (word.endsWith("s") && !word.endsWith("ss")) c.push(word.slice(0, -1));
+  if (word.endsWith("ied")) c.push(word.slice(0, -3) + "y");
+  if (word.endsWith("ed")) { c.push(word.slice(0, -2)); c.push(word.slice(0, -1)); }
+  if (word.endsWith("ing")) { c.push(word.slice(0, -3)); c.push(word.slice(0, -3) + "e"); }
+  if (word.endsWith("er")) { c.push(word.slice(0, -2)); c.push(word.slice(0, -1)); }
+  if (word.endsWith("est")) { c.push(word.slice(0, -3)); c.push(word.slice(0, -2)); }
+  if (word.endsWith("ly")) c.push(word.slice(0, -2));
+  // running / bigger のように子音が重なる形
+  const doubled = word.match(/^(.*?)(.)\2(ed|ing|er|est)$/);
+  if (doubled) c.push(doubled[1] + doubled[2]);
+  return c;
+}
+
+function lookupWord(raw) {
+  const word = raw.toLowerCase();
+  const decks = deckGloss();
+  const glossary = window.WordGlossary || {};
+  for (const candidate of wordCandidates(word)) {
+    if (decks.has(candidate)) return decks.get(candidate);
+    if (glossary[candidate]) return glossary[candidate];
+  }
+  return null;
+}
+
+// 英文を1語ずつ <button> に包み、タップで意味を出せるようにする
+function renderTappable(el, text) {
+  if (!el) return;
+  if (!text) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = text.split(/(\s+)/).map((chunk) => {
+    if (/^\s+$/.test(chunk)) return chunk === "\n" ? "<br>" : escapeHtml(chunk);
+    // 前後の記号は残したまま、中身の語だけをタップ対象にする
+    const m = chunk.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/);
+    if (!m) return escapeHtml(chunk);
+    const [, before, word, after] = m;
+    // 2nd / 5th の序数接尾辞や B12 のような記号は語として扱わない
+    if (word.length < 2 || /\d$/.test(before)) return escapeHtml(chunk);
+    return `${escapeHtml(before)}<button type="button" class="tap-word" data-word="${escapeHtml(word)}">${escapeHtml(word)}</button>${escapeHtml(after)}`;
+  }).join("");
+}
+
+function showWordMeaning(word, anchorEl) {
+  const popup = $("#wordPopup");
+  const meaning = lookupWord(word);
+  $("#wordPopupWord").textContent = word;
+  $("#wordPopupMeaning").textContent = meaning || "この単語は辞書に登録されていません。";
+  $("#wordPopupMeaning").classList.toggle("is-missing", !meaning);
+  popup.hidden = false;
+
+  // タップした語のすぐ下に出す（画面からはみ出さないよう左右を丸める）
+  const rect = anchorEl.getBoundingClientRect();
+  const top = rect.bottom + window.scrollY + 8;
+  const width = popup.offsetWidth;
+  const maxLeft = window.innerWidth - width - 12;
+  const left = Math.max(12, Math.min(rect.left + window.scrollX + rect.width / 2 - width / 2, maxLeft));
+  popup.style.top = `${top}px`;
+  popup.style.left = `${left}px`;
+
+  $$(".tap-word.is-active").forEach((el) => el.classList.remove("is-active"));
+  anchorEl.classList.add("is-active");
+}
+
+function hideWordPopup() {
+  $("#wordPopup").hidden = true;
+  $$(".tap-word.is-active").forEach((el) => el.classList.remove("is-active"));
+}
+
 function renderHistory() {
   const items = state.history.slice(-5).reverse();
   $("#historyList").innerHTML = items.length === 0
@@ -1913,9 +2004,13 @@ $("#bonusRevealButton").addEventListener("click", () => {
     example.hidden = true;
     $("#bonusRevealButton").textContent = "例文を見る";
   } else {
-    example.textContent = example.dataset.exampleJa
-      ? `${example.dataset.example}\n${example.dataset.exampleJa}`
-      : example.dataset.example || "";
+    renderTappable(example, example.dataset.example || "");
+    if (example.dataset.exampleJa) {
+      const ja = document.createElement("span");
+      ja.className = "bonus-example-ja";
+      ja.textContent = example.dataset.exampleJa;
+      example.append(document.createElement("br"), ja);
+    }
     example.hidden = false;
     $("#bonusRevealButton").textContent = "隠す";
   }
@@ -1924,6 +2019,22 @@ $("#bonusPlayButton").addEventListener("click", () => {
   const text = $("#bonusExample").dataset.example;
   if (text) speak(text);
 });
+// 単語タップ辞書: 本文中の単語はどこにあっても拾えるよう、documentに1つだけ委譲する
+document.addEventListener("click", (event) => {
+  const word = event.target.closest(".tap-word");
+  if (word) {
+    showWordMeaning(word.dataset.word, word);
+    return;
+  }
+  if (!event.target.closest("#wordPopup")) hideWordPopup();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") hideWordPopup();
+});
+window.addEventListener("resize", hideWordPopup);
+$("#wordPopupClose").addEventListener("click", hideWordPopup);
+$("#wordPopupSpeak").addEventListener("click", () => speak($("#wordPopupWord").textContent, 0.85));
+
 $("#bonusChoices").addEventListener("click", (event) => {
   const btn = event.target.closest(".choice-button");
   if (!btn || btn.disabled) return;
