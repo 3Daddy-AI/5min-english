@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=13" />
+    <link rel="stylesheet" href="styles.css?v=14" />
   </head>
   <body>
     <div class="app-shell">
@@ -360,11 +360,12 @@
       <button class="word-popup-close" id="wordPopupClose" type="button" aria-label="閉じる">✕</button>
       <strong id="wordPopupWord"></strong>
       <p id="wordPopupMeaning"></p>
+      <p class="word-popup-single" id="wordPopupSingle" hidden></p>
       <button class="ghost-button small" id="wordPopupSpeak" type="button">🔊 発音を聞く</button>
     </div>
 
-    <script src="glossary.js?v=1"></script>
+    <script src="glossary.js?v=2"></script>
     <script type="module" src="cloud.js?v=2"></script>
-    <script defer src="app.js?v=11"></script>
+    <script defer src="app.js?v=12"></script>
   </body>
 </html>

@@ -9,6 +9,8 @@ const DIAG_ANSWERS = { vocab: "b", grammar: "b" };
 const VOCAB_DAILY = 15;
 const VOCAB_NEW_PER_DAY = 6; // 復習が溜まっていても、新出単語は最低これだけ毎日出す
 const SRS_INTERVALS = [0, 1, 2, 4, 7, 15]; // box(1-5) -> 次回までの日数
+const SPEAK_RATE = 0.8;       // 読み上げの標準速度（初心者が聞き取りやすいようゆっくりめ）
+const SPEAK_RATE_SLOW = 0.6;  // 🐢ボタン用。標準よりさらに遅くする
 
 const goalMeta = {
   travel: { label: "旅行・海外生活", focus: "質問力と聞き返し" },
@@ -1165,7 +1167,7 @@ function checkAnswer() {
 
 /* ---------- 音声（TTS / 音声認識） ---------- */
 
-function speak(text, rate = 0.95) {
+function speak(text, rate = SPEAK_RATE) {
   if (!("speechSynthesis" in window)) {
     toast("このブラウザは音声再生に対応していません");
     return;
@@ -1674,6 +1676,68 @@ function lookupWord(raw) {
   return null;
 }
 
+/* ---------- 熟語（複数語）の辞書 ---------- */
+
+// 単語デッキの複合語（boarding pass 等）と PhraseGlossary をまとめた索引。
+// 長い熟語から先に照合したいので、語数の多い順に並べておく。
+let phraseIndexCache = null;
+function phraseIndex() {
+  if (phraseIndexCache) return phraseIndexCache;
+  const merged = new Map();
+  Object.values(vocabDecks).forEach((deck) => {
+    deck.forEach((word) => {
+      const key = word.w.toLowerCase();
+      if (/[\s-]/.test(key) && !merged.has(key)) merged.set(key, word.ja);
+    });
+  });
+  Object.entries(window.PhraseGlossary || {}).forEach(([key, ja]) => {
+    if (!merged.has(key)) merged.set(key, ja);
+  });
+  const exact = new Set(window.PhraseExact || []);
+  phraseIndexCache = [...merged.entries()]
+    .map(([key, ja]) => ({ key, ja, tokens: key.split(/[\s-]+/), exact: exact.has(key) }))
+    .sort((a, b) => b.tokens.length - a.tokens.length);
+  return phraseIndexCache;
+}
+
+// 熟語の各語は活用していてもよい（showed up → show up）。
+// ただし固定表現は字面が一致したときだけ認める。
+function tokenMatches(textToken, phraseToken, exactOnly) {
+  if (textToken === phraseToken) return true;
+  if (exactOnly) return false;
+  return wordCandidates(textToken).includes(phraseToken);
+}
+
+// tokens の start 位置から始まる最長の熟語を返す
+function matchPhraseAt(tokens, start) {
+  for (const phrase of phraseIndex()) {
+    const len = phrase.tokens.length;
+    if (len < 2 || start + len > tokens.length) continue;
+    let hit = true;
+    for (let i = 0; i < len; i++) {
+      if (!tokenMatches(tokens[start + i], phrase.tokens[i], phrase.exact)) { hit = false; break; }
+    }
+    if (hit) return { ...phrase, start, end: start + len - 1 };
+  }
+  return null;
+}
+
+// 文全体を走査し、重ならないように熟語の範囲を確定する
+function findPhraseSpans(tokens) {
+  const spans = [];
+  let i = 0;
+  while (i < tokens.length) {
+    const match = matchPhraseAt(tokens, i);
+    if (match) {
+      spans.push(match);
+      i = match.end + 1;
+    } else {
+      i += 1;
+    }
+  }
+  return spans;
+}
+
 // 英文を1語ずつ <button> に包み、タップで意味を出せるようにする
 function renderTappable(el, text) {
   if (!el) return;
@@ -1681,24 +1745,58 @@ function renderTappable(el, text) {
     el.innerHTML = "";
     return;
   }
-  el.innerHTML = text.split(/(\s+)/).map((chunk) => {
-    if (/^\s+$/.test(chunk)) return chunk === "\n" ? "<br>" : escapeHtml(chunk);
-    // 前後の記号は残したまま、中身の語だけをタップ対象にする
+  // まず語と記号に分解し、タップ対象の語だけに通し番号を振る
+  const chunks = text.split(/(\s+)/).map((chunk) => {
+    if (/^\s+$/.test(chunk)) return { type: "space", raw: chunk };
     const m = chunk.match(/^([^A-Za-z]*)([A-Za-z][A-Za-z'’-]*)([^A-Za-z]*)$/);
-    if (!m) return escapeHtml(chunk);
+    if (!m) return { type: "raw", raw: chunk };
     const [, before, word, after] = m;
     // 2nd / 5th の序数接尾辞や B12 のような記号は語として扱わない
-    if (word.length < 2 || /\d$/.test(before)) return escapeHtml(chunk);
-    return `${escapeHtml(before)}<button type="button" class="tap-word" data-word="${escapeHtml(word)}">${escapeHtml(word)}</button>${escapeHtml(after)}`;
+    if (word.length < 2 || /\d$/.test(before)) return { type: "raw", raw: chunk };
+    return { type: "word", before, word, after };
+  });
+
+  const words = chunks.filter((c) => c.type === "word");
+  words.forEach((c, i) => { c.index = i; });
+  const spans = findPhraseSpans(words.map((c) => c.word.toLowerCase()));
+  spans.forEach((span) => {
+    for (let i = span.start; i <= span.end; i++) {
+      words[i].phrase = span.key;
+      words[i].phraseJa = span.ja;
+      words[i].phraseText = words.slice(span.start, span.end + 1).map((w) => w.word).join(" ");
+    }
+  });
+
+  el.innerHTML = chunks.map((c) => {
+    if (c.type === "space") return c.raw === "\n" ? "<br>" : escapeHtml(c.raw);
+    if (c.type === "raw") return escapeHtml(c.raw);
+    const phraseAttrs = c.phrase
+      ? ` data-phrase="${escapeHtml(c.phraseText)}" data-phrase-ja="${escapeHtml(c.phraseJa)}"`
+      : "";
+    const cls = c.phrase ? "tap-word in-phrase" : "tap-word";
+    return `${escapeHtml(c.before)}<button type="button" class="${cls}" data-word="${escapeHtml(c.word)}"${phraseAttrs}>${escapeHtml(c.word)}</button>${escapeHtml(c.after)}`;
   }).join("");
 }
 
 function showWordMeaning(word, anchorEl) {
   const popup = $("#wordPopup");
+  const phrase = anchorEl.dataset.phrase;
   const meaning = lookupWord(word);
-  $("#wordPopupWord").textContent = word;
-  $("#wordPopupMeaning").textContent = meaning || "この単語は辞書に登録されていません。";
-  $("#wordPopupMeaning").classList.toggle("is-missing", !meaning);
+
+  // 熟語の一部なら熟語の意味を主役にし、単語単体の意味は下に添える
+  $("#wordPopupWord").textContent = phrase || word;
+  $("#wordPopupMeaning").textContent = phrase
+    ? anchorEl.dataset.phraseJa
+    : (meaning || "この単語は辞書に登録されていません。");
+  $("#wordPopupMeaning").classList.toggle("is-missing", !phrase && !meaning);
+
+  const single = $("#wordPopupSingle");
+  if (phrase && meaning) {
+    single.textContent = `${word}: ${meaning}`;
+    single.hidden = false;
+  } else {
+    single.hidden = true;
+  }
   popup.hidden = false;
 
   // タップした語のすぐ下に出す（画面からはみ出さないよう左右を丸める）
@@ -1969,8 +2067,8 @@ $("#hintButton").addEventListener("click", () => {
   hint.hidden = !hint.hidden;
   $("#hintButton").textContent = hint.hidden ? "💡 使えるフレーズを見る" : "💡 フレーズを隠す";
 });
-$("#playAudioButton").addEventListener("click", () => playListening(0.95));
-$("#playSlowButton").addEventListener("click", () => playListening(0.68));
+$("#playAudioButton").addEventListener("click", () => playListening(SPEAK_RATE));
+$("#playSlowButton").addEventListener("click", () => playListening(SPEAK_RATE_SLOW));
 $("#modelSpeakButton").addEventListener("click", () => {
   if (modelRevealed) speak($("#modelAnswerText").textContent);
 });
@@ -2033,7 +2131,7 @@ document.addEventListener("keydown", (event) => {
 });
 window.addEventListener("resize", hideWordPopup);
 $("#wordPopupClose").addEventListener("click", hideWordPopup);
-$("#wordPopupSpeak").addEventListener("click", () => speak($("#wordPopupWord").textContent, 0.85));
+$("#wordPopupSpeak").addEventListener("click", () => speak($("#wordPopupWord").textContent));
 
 $("#bonusChoices").addEventListener("click", (event) => {
   const btn = event.target.closest(".choice-button");

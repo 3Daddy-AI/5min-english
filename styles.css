@@ -1033,6 +1033,25 @@ button.daily-task:nth-child(even) {
   font-weight: 500;
 }
 
+.word-popup-single {
+  padding-top: 8px;
+  border-top: 2px dashed rgba(22, 18, 28, 0.3);
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* 熟語の一部である語は、まとまりが分かるよう下線をつなげて示す */
+.tap-word.in-phrase {
+  border-bottom: 2px solid rgba(233, 76, 96, 0.55);
+}
+
+.tap-word.in-phrase:hover,
+.tap-word.in-phrase.is-active {
+  background: rgba(233, 76, 96, 0.2);
+  border-bottom-color: var(--red);
+}
+
 .word-popup-close {
   position: absolute;
   top: 6px;

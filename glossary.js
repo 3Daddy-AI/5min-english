@@ -249,3 +249,109 @@ window.WordGlossary = {
   "in-person": "対面の", "open-book": "持ち込み可の",
   "self-expression": "自己表現", "three-hour": "3時間の"
 };
+
+// 熟語・イディオム辞書。単語デッキ側の複合語（boarding pass など）は
+// app.js の buildPhraseIndex() が自動で取り込むため、ここには書かない。
+// 活用形は lookupWord と同じ正規化で照合するので、原形で登録すればよい。
+window.PhraseGlossary = {
+  /* 依頼・丁寧表現 */
+  "could you": "〜していただけますか", "could i": "〜してもよいですか",
+  "would you": "〜していただけますか", "would like": "〜したいのですが",
+  "i'd like": "〜したいのですが", "i would like": "〜したいのですが",
+  "thank you": "ありがとう", "thank you for": "〜をありがとう",
+  "excuse me": "すみません", "let me know": "知らせてください",
+  "let me": "私に〜させてください", "please find attached": "添付をご確認ください",
+  "look forward to": "〜を楽しみにする", "make sure": "確かめる・必ず〜する",
+  "feel free to": "遠慮なく〜してください", "as soon as possible": "できるだけ早く",
+  "in advance": "前もって", "get back to": "〜に折り返し連絡する",
+  "i'm afraid": "申し訳ありませんが", "would you mind": "〜していただけませんか",
+
+  /* 句動詞 */
+  "follow up": "追って確認する", "sort out": "解決する・整理する",
+  "put off": "延期する", "call off": "中止する", "turn down": "断る・下げる",
+  "bring up": "話題に出す", "point out": "指摘する", "carry out": "実行する",
+  "set up": "設定する・準備する", "come up with": "思いつく",
+  "deal with": "対処する", "look into": "調べる", "check out": "確認する・退出する",
+  "check in": "チェックインする", "run out of": "〜を切らす",
+  "take care of": "世話をする・対処する", "end up": "結局〜になる",
+  "work out": "うまくいく・運動する", "find out": "見つけ出す・分かる",
+  "go over": "見直す", "go through": "経験する・目を通す", "hold on": "待つ",
+  "hang up": "電話を切る", "pick up": "拾う・迎えに行く", "drop off": "届ける・降ろす",
+  "fill out": "記入する", "fill in": "記入する", "hand out": "配る",
+  "sign up": "申し込む", "log in": "ログインする", "back up": "バックアップする",
+  "break down": "故障する", "cut down": "削減する", "keep up": "遅れずについていく",
+  "make up": "埋め合わせる・作り上げる", "put together": "まとめる",
+  "turn in": "提出する", "look after": "世話をする", "run into": "偶然出会う",
+  "give up": "あきらめる", "take over": "引き継ぐ", "stand out": "目立つ",
+  "come across": "出くわす", "get by": "何とかやっていく", "put up with": "我慢する",
+
+  /* 動詞句・慣用句 */
+  "take place": "開催される", "take part": "参加する", "make sense": "筋が通る",
+  "make a difference": "違いを生む", "pay attention": "注意を払う",
+  "keep in mind": "心に留めておく", "take a look": "見てみる",
+  "have a look": "見てみる", "take time": "時間がかかる",
+  "make time": "時間を作る", "save time": "時間を節約する",
+  "in charge": "担当して", "on behalf of": "〜を代表して",
+  "take responsibility": "責任を取る", "reach out": "連絡を取る",
+  "touch base": "軽く連絡を取る", "move forward": "前に進める",
+  "keep track of": "把握しておく", "focus on": "〜に集中する",
+  "depend on": "〜次第である", "based on": "〜に基づいて",
+  "result in": "〜という結果になる", "lead to": "〜につながる",
+  "apply for": "〜に応募する", "apply to": "〜に当てはまる",
+  "ask for": "〜を求める", "wait for": "〜を待つ", "look for": "〜を探す",
+  "care about": "〜を気にかける", "worry about": "〜を心配する",
+  "think about": "〜について考える", "talk about": "〜について話す",
+  "agree with": "〜に賛成する", "disagree with": "〜に反対する",
+
+  /* つなぎ表現・副詞句 */
+  "by the way": "ところで", "of course": "もちろん", "at the moment": "今のところ",
+  "in person": "直接会って", "so far": "今のところ", "as well": "〜も同様に",
+  "as well as": "〜と同様に", "such as": "〜のような", "instead of": "〜の代わりに",
+  "rather than": "〜よりむしろ", "according to": "〜によれば",
+  "in addition": "加えて", "on the other hand": "一方で",
+  "as a result": "その結果", "for example": "例えば", "for instance": "例えば",
+  "in fact": "実際", "at first": "最初は", "after all": "結局",
+  "no longer": "もはや〜ない", "a lot of": "たくさんの", "a bit": "少し",
+  "a little": "少し", "at least": "少なくとも", "at most": "多くとも",
+  "up to": "最大〜まで・〜次第", "due to": "〜のせいで", "thanks to": "〜のおかげで",
+  "prior to": "〜より前に", "regardless of": "〜に関わらず",
+  "as long as": "〜する限り", "even though": "〜だけれども",
+  "in order to": "〜するために", "so that": "〜するように",
+  "as if": "まるで〜のように", "in terms of": "〜の観点では",
+  "in case": "〜の場合に備えて", "on time": "時間通りに", "in time": "間に合って",
+  "right away": "すぐに", "all day": "一日中", "these days": "最近",
+  "at the same time": "同時に", "more than": "〜より多く",
+  "less than": "〜より少なく", "as much as": "〜と同じくらい",
+  "each other": "お互いに", "one another": "お互いに",
+  "in general": "一般的に", "in particular": "特に", "above all": "とりわけ",
+  "on the whole": "全体として", "to be honest": "正直に言うと",
+  "in short": "要するに", "that is": "つまり", "in other words": "言い換えると",
+
+  /* 助動詞的表現 */
+  "used to": "以前は〜だった", "be able to": "〜できる",
+  "be supposed to": "〜することになっている", "had better": "〜した方がよい",
+  "have to": "〜しなければならない", "need to": "〜する必要がある",
+  "want to": "〜したい", "going to": "〜するつもり", "plan to": "〜する予定",
+  "decide to": "〜すると決める", "manage to": "何とか〜する",
+  "try to": "〜しようとする", "seem to": "〜のようだ",
+  "would rather": "むしろ〜したい", "might as well": "〜した方がましだ",
+
+  /* 日常会話 */
+  "how about": "〜はどうですか", "what about": "〜はどうですか",
+  "how come": "どうして", "no problem": "問題ありません",
+  "never mind": "気にしないで", "you're welcome": "どういたしまして",
+  "see you": "またね", "take care": "気をつけて", "good luck": "頑張って",
+  "long time no see": "久しぶり", "not at all": "全然そんなことない",
+  "sounds like": "〜のようですね", "i see": "なるほど",
+  "by all means": "ぜひどうぞ", "just in case": "念のため"
+};
+
+// 活用形での照合を許さない固定表現。
+// 例: 別れの挨拶 "see you" は、"looking forward to seeing you"（実際に会う）に
+// 誤って当たってしまうため、字面どおりのときだけ熟語として扱う。
+window.PhraseExact = [
+  "see you", "take care", "good luck", "long time no see", "not at all",
+  "i see", "no problem", "never mind", "you're welcome", "of course",
+  "by all means", "how come", "that is", "in fact", "at first",
+  "after all", "as well", "so far", "a bit", "a little"
+];
