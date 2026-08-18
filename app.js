@@ -719,6 +719,7 @@ const defaultState = () => ({
   history: [],         // { d, skill, task, answer, stars }
   badges: [],
   diagnoses: [],       // { d, score, level }
+  radarStage: 0,       // 技能レーダーの現在ステージ（0=未算出）
   settings: { weeklyGoal: 5, reminderTime: "21:00" }
 });
 
@@ -1523,19 +1524,51 @@ function renderWeek(streak) {
     : `今週 ${doneThisWeek}/${goalDays}日。課題か単語を1つ終えると、その日が自動で記録されます。`;
 }
 
+// 到達すると次の目標に切り替わる段階（レーダーの外周が示すXP）。
+// 上限を固定すると満タンで止まって伸びが見えなくなるため、倍々で広げていく。
+const RADAR_STAGES = [150, 300, 600, 1200, 2400, 4800, 9600, 19200];
+
+function radarStageFor(maxXp) {
+  const index = RADAR_STAGES.findIndex((target) => maxXp < target);
+  if (index === -1) {
+    // 最終段階を超えたら、以降も倍々で伸ばし続ける
+    let target = RADAR_STAGES[RADAR_STAGES.length - 1];
+    let stage = RADAR_STAGES.length;
+    while (maxXp >= target) { target *= 2; stage += 1; }
+    return { target, stage };
+  }
+  return { target: RADAR_STAGES[index], stage: index + 1 };
+}
+
 function renderRadar() {
   const svg = $("#radarChart");
   const axes = [
     ["Vocab", "vocab"], ["Speak", "speaking"], ["Write", "writing"], ["Read", "reading"], ["Listen", "listening"]
   ];
-  const cx = 120; const cy = 112; const radius = 78;
+  const cx = 120; const cy = 124; const radius = 78;
   const point = (i, r) => {
     const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
     return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
   };
   const ringPath = (r) => axes.map((_, i) => point(i, r).map((n) => n.toFixed(1)).join(",")).join(" ");
-  const values = axes.map(([, key]) => Math.min(1, (state.skillXp[key] || 0) / 300));
+
+  const xp = axes.map(([, key]) => state.skillXp[key] || 0);
+  const maxXp = Math.max(0, ...xp);
+  const { target, stage } = radarStageFor(maxXp);
+  const values = xp.map((v) => Math.min(1, v / target));
   const valuePath = axes.map((_, i) => point(i, Math.max(0.04, values[i]) * radius).map((n) => n.toFixed(1)).join(",")).join(" ");
+
+  // ステージが上がったら祝う（目標が遠のいたのではなく、伸びた結果だと伝える）。
+  // 初回計算時（既存ユーザーの初回読み込みを含む）は黙って記録するだけにする。
+  if (!state.radarStage) {
+    state.radarStage = stage;
+    saveState();
+  } else if (stage > state.radarStage) {
+    state.radarStage = stage;
+    saveState();
+    toast(`技能ステージ${stage}に到達！次の目標は ${target} XP`);
+    celebrate("LEVEL UP!");
+  }
 
   svg.innerHTML = `
     ${[0.33, 0.66, 1].map((f) => `<polygon points="${ringPath(radius * f)}" class="radar-ring"></polygon>`).join("")}
@@ -1543,9 +1576,20 @@ function renderRadar() {
     <polygon points="${valuePath}" class="radar-value"></polygon>
     ${axes.map(([label], i) => {
       const [x, y] = point(i, radius + 16);
-      return `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" class="radar-label">${label}</text>`;
+      const labelY = y + 4;
+      // XPはラベルと同じx上に置き、真上の頂点だけラベルの上、他は下に逃がす
+      const isTop = i === 0;
+      const xpY = labelY + (isTop ? -18 : 15);
+      return `<text x="${x.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" class="radar-label">${label}</text>`
+        + `<text x="${x.toFixed(1)}" y="${xpY.toFixed(1)}" text-anchor="middle" class="radar-xp">${xp[i]}</text>`;
     }).join("")}
   `;
+
+  // 一番伸びている技能と、一番手薄な技能を言葉でも伝える
+  const lowest = axes[xp.indexOf(Math.min(...xp))][0];
+  $("#radarNote").textContent = maxXp === 0
+    ? "課題をこなすと、技能ごとの経験値がここに溜まります。"
+    : `ステージ${stage}（外周 = ${target} XP）。いま一番手薄なのは ${lowest} です。`;
 }
 
 function renderDiagChart() {
@@ -1999,6 +2043,7 @@ function mergeStates(local, cloud) {
     history: dedupeByJson(local.history || [], cloud.history || []),
     badges: dedupeList([...(local.badges || []), ...(cloud.badges || [])]),
     diagnoses: dedupeByJson(local.diagnoses || [], cloud.diagnoses || []),
+    radarStage: Math.max(local.radarStage || 0, cloud.radarStage || 0),
     settings: local.settings || cloud.settings
   };
 }

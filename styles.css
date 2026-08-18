@@ -1269,6 +1269,21 @@ button.daily-task:nth-child(even) {
   fill: var(--muted);
 }
 
+.radar-xp {
+  fill: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.radar-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: center;
+}
+
 .diag-bar {
   fill: var(--blue);
   stroke: var(--line);
