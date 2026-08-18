@@ -9,8 +9,8 @@ const DIAG_ANSWERS = { vocab: "b", grammar: "b" };
 const VOCAB_DAILY = 15;
 const VOCAB_NEW_PER_DAY = 6; // 復習が溜まっていても、新出単語は最低これだけ毎日出す
 const SRS_INTERVALS = [0, 1, 2, 4, 7, 15]; // box(1-5) -> 次回までの日数
-const SPEAK_RATE = 0.8;       // 読み上げの標準速度（初心者が聞き取りやすいようゆっくりめ）
-const SPEAK_RATE_SLOW = 0.6;  // 🐢ボタン用。標準よりさらに遅くする
+const SPEAK_RATE = 0.5;       // 読み上げの標準速度（初心者が聞き取りやすいようゆっくりめ）
+const SPEAK_RATE_SLOW = 0.4;  // 🐢ボタン用。標準よりさらに遅くする
 
 const goalMeta = {
   travel: { label: "旅行・海外生活", focus: "質問力と聞き返し" },
