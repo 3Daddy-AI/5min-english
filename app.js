@@ -638,6 +638,25 @@ const translations = {
   "Long story short, the landlord finally fixed the heater, but now the kitchen tap is leaking. This apartment keeps me busy.": "手短に言うと、大家さんがやっとヒーターを直してくれたんだけど、今度はキッチンの蛇口が水漏れしてる。このアパートには手を焼くよ。"
 };
 
+/* tasks-extra.js の追加課題を合流させる（同じ日に同じ問題が戻る周期を長くするため） */
+function mergeExtraTasks() {
+  const extra = window.ExtraTaskPools;
+  if (!extra) return;
+  Object.entries(extra).forEach(([goal, tiers]) => {
+    if (!taskPools[goal]) return;
+    Object.entries(tiers).forEach(([tierName, skills]) => {
+      if (!taskPools[goal][tierName]) return;
+      Object.entries(skills).forEach(([skill, tasks]) => {
+        if (Array.isArray(taskPools[goal][tierName][skill])) {
+          taskPools[goal][tierName][skill].push(...tasks);
+        }
+      });
+    });
+  });
+  Object.assign(translations, window.ExtraTranslations || {});
+}
+mergeExtraTasks();
+
 /* 翻訳の抜けを開発時に検出する（本番でも害はないので常時実行） */
 function checkTranslations() {
   const missing = [];
