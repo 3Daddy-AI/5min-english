@@ -4,3 +4,6 @@ dist/
 .vercel/
 .netlify/
 .vercel
+
+# 継目（ui-tsugime）の作業用ディレクトリ
+tsugime-out/
